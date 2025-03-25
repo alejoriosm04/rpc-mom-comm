@@ -4,6 +4,8 @@ Communication system between Remote Processes with MOM Failover Mechanism.
 
 ### Architecture Proposal
 
+![image](https://github.com/user-attachments/assets/d8fd110f-116f-483d-8341-9d52f9809936)
+
 ### To-Do List
 
 - [ ] Implement the REST Client.
