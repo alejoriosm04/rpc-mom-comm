@@ -1,0 +1,29 @@
+# Global ignores
+.DS_Store
+*.log
+*.pem
+*.tsbuildinfo
+
+# Node
+node_modules/
+.next/
+out/
+.env*
+.vercel/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# API Gateway
+api-gateway/venv/
+
+# E-commerce app
+ecommerce-app/node_modules/
+ecommerce-app/.next/
+ecommerce-app/.env.local
+ecommerce-app/.vercel/
+
+# MOM or RabbitMQ logs (if any)
+mom/logs/
