@@ -1,4 +1,0 @@
-endpoints:
-  "/products":
-    methods: ["GET", "POST"]
-    service: "product"   

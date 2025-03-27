@@ -1,16 +1,9 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter
+from methods.product import get_products_grpc
 from models.product import ProductResponse
-from methods.product import get_products
-from slowapi.util import get_remote_address
-from config.limiter import limiter  
 
-router = APIRouter()
+router = APIRouter(prefix="/api/products", tags=["Products"])
 
-@router.get(
-    "/products",
-    response_model=list[ProductResponse],
-    tags=["Products"],
-)
-@limiter.limit("60/minute") 
-async def products(request: Request):  
-    return get_products()
+@router.get("/", response_model=list[ProductResponse])
+async def get_products():
+    return await get_products_grpc()
