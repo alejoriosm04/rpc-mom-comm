@@ -8,20 +8,22 @@ export const productService = {
       const offset = (page - 1) * limit;
       const response = await fetch(`${API_URL}/products?offset=${offset}&limit=${limit}`);
       if (!response.ok) throw new Error('Failed to fetch products');
-      const products = await response.json();
-      
-      // Transform the response to match our ProductsResponse type
+  
+      // ✅ Esta línea fue cambiada
+      const data = await response.json(); // data es { products, total, page, limit }
+  
       return {
-        products,
-        total: 200, // API doesn't provide total, using a default value
-        page,
-        limit
+        products: data.products, // aseguras que products es un array
+        total: data.total,
+        page: data.page,
+        limit: data.limit
       };
     } catch (error) {
       console.error('Error fetching products:', error);
       throw error;
     }
-  },
+  }
+  ,
 
   async getProductById(id: number): Promise<Product> {
     try {
