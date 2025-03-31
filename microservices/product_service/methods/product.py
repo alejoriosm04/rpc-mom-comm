@@ -8,9 +8,9 @@ def get_products():
             "category": {
                 "id": 1,
                 "name": "Category A",
-                "image": "https://example.com/image.jpg",
+                "image": "https://img.freepik.com/free-photo/beautiful-view-sunset-sea_23-2148019892.jpg",
                 "slug": "category-a"
             },
-            "images": ["https://example.com/image.jpg"]
+            "images": ["https://img.freepik.com/free-photo/beautiful-view-sunset-sea_23-2148019892.jpg"]
         }
     ]
