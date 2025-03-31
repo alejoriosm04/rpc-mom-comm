@@ -63,6 +63,15 @@ The API Gateway is built with FastAPI and acts as the entry point for all reques
 
 To run the API Gateway:
 
+Add the following env variables to your .env file: 
+
+```bash
+PRODUCT_SERVER_HOST=localhost
+PRODUCT_SERVER_PORT=50051
+
+```
+Then: 
+
 ```bash
 cd api-gateway
 python -m venv venv
@@ -83,6 +92,14 @@ Then, access the documentation at:
 This microservice provides product data via gRPC. It must be running so the API Gateway can fetch data through it.
 
 To run the microservice:
+
+Add the following env variables to your .env file: 
+
+```bash
+GRPC_SERVER_PORT=50051
+
+```
+Then:
 
 ```bash
 cd microservices/product_service
