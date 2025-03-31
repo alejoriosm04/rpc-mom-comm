@@ -1,9 +1,22 @@
-from fastapi import APIRouter
+# routes/product.py
+from fastapi import APIRouter, Query, Request
+from models.product import ProductResponse, ProductsResponse
 from methods.product import get_products_grpc
-from models.product import ProductResponse
+from config.limiter import limiter
 
 router = APIRouter(prefix="/api/products", tags=["Products"])
 
-@router.get("/", response_model=list[ProductResponse])
-async def get_products():
-    return await get_products_grpc()
+@router.get("/", response_model=ProductsResponse)
+@limiter.limit("60/minute")
+async def get_products(request: Request, page: int = Query(1), limit: int = Query(12)):
+    products = await get_products_grpc()
+    total = len(products)
+    start = (page - 1) * limit
+    end = start + limit
+    paginated = products[start:end]
+    return {
+        "products": paginated,
+        "total": total,
+        "page": page,
+        "limit": limit
+    }
