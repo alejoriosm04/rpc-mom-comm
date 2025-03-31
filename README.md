@@ -8,13 +8,13 @@ Communication system between Remote Processes with MOM Failover Mechanism.
 
 ### To-Do List
 
-- [ ] Implement the REST Client.
-- [ ] Implement the API Gateway.
-- [ ] Implement the RPC communication system.
-- [ ] Implement the microservice 1.
+- [X] Implement the REST Client.
+- [X] Implement the API Gateway.
+- [X] Implement the RPC communication system.
+- [X] Implement the microservice 1.
 - [ ] Implement the microservice 2.
 - [ ] Implement the microservice 3.
-- [ ] Implement the MOM Failover Mechanism.
+- [X] Implement the MOM Failover Mechanism.
 - [ ] Create the documentation.
 
 ### 📁 Project structure
