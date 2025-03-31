@@ -54,8 +54,10 @@ Then, you can access the REST Client at `http://localhost:3000`.
 Genial, tu README está muy claro. Para incluir la ejecución del **API Gateway** y el **microservicio**, puedes seguir un estilo similar al que usaste para el cliente REST. Aquí te dejo una **propuesta completa** para añadir al README:
 
 ---
-**Note:** Duplicate the pb folder in the api-gateway folder and add it in the product-service folder to avoid errors
+
 ### 2. API Gateway (FastAPI)
+
+**Note:** Duplicate the pb folder in the api-gateway folder and add it in the product-service folder to avoid errors
 
 The API Gateway is built with FastAPI and acts as the entry point for all requests. It communicates with the microservices using gRPC.
 
