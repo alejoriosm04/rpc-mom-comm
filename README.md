@@ -50,3 +50,48 @@ docker-compose up -d --build
 Then, you can access the REST Client at `http://localhost:3000`.
 
 **Note:** This is the same process to deploy the REST Client in AWS, remember to enable the `3000` port in the AWS Security Group.
+
+Genial, tu README está muy claro. Para incluir la ejecución del **API Gateway** y el **microservicio**, puedes seguir un estilo similar al que usaste para el cliente REST. Aquí te dejo una **propuesta completa** para añadir al README:
+
+---
+
+### 2. API Gateway (FastAPI)
+
+The API Gateway is built with FastAPI and acts as the entry point for all requests. It communicates with the microservices using gRPC.
+
+To run the API Gateway:
+
+```bash
+cd api-gateway
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app:app --reload 
+```
+
+Then, access the documentation at:  
+👉 `http://localhost:8000/docs`
+
+> ℹ️ Make sure your microservices are running before calling the API Gateway.
+
+---
+
+### 3. Microservice 1 (Products Service - gRPC)
+
+This microservice provides product data via gRPC. It must be running so the API Gateway can fetch data through it.
+
+To run the microservice:
+
+```bash
+cd microservices/product_service
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python main.py  # or the main server file
+```
+
+> ✅ This will start the gRPC server that listens for product requests.
+
+---
+
+
