@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package product;
+
+// Servicio para productos
+service ProductService {
+  // Método para obtener todos los productos
+  rpc GetProducts (ProductRequest) returns (ProductListResponse);
+}
+
+// Mensaje de solicitud (puedes agregar parámetros si es necesario)
+message ProductRequest {}
+
+// Mensaje que define una categoría
+message Category {
+  int32 id = 1;
+  string name = 2;
+  string image = 3;
+  string slug = 4;
+}
+
+// Mensaje que define un producto
+message Product {
+  int32 id = 1;
+  string title = 2;
+  float price = 3;
+  string description = 4;
+  Category category = 5;
+  repeated string images = 6;
+}
+
+// Mensaje de respuesta que contiene una lista de productos
+message ProductListResponse {
+  repeated Product products = 1;
+}
