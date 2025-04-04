@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  ecommerce-front:
+    build: ./ecommerce-app
+    container_name: ecommerce-front
+    ports:
+      - "3000:3000"
