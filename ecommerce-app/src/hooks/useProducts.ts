@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Product, ProductsResponse } from '../types/product';
+import { Product } from '../types/product';
 import { productService } from '../services/productService';
 
 export const useProducts = (initialPage: number = 1, initialLimit: number = 12) => {
