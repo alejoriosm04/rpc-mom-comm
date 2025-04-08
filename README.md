@@ -31,14 +31,7 @@ Communication system between Remote Processes with MOM Failover Mechanism.
 └── mom/
 ```
 
-#### Prerequisites
-Before running any component, ensure you have:
-* RabbitMQ installed (with Erlang/OTP)
-* Python 3.8+
-* Node.js 16+ (for Next.js client)
-* Docker (optional)
-
-### 1. REST Client (Next.js)
+#### 1. REST Client (Next.js)
 
 At the moment, the REST Client is a simple Next.js application that uses the `fetch` API to make requests to the API Gateway.
 
@@ -75,8 +68,7 @@ Add the following env variables to your .env file:
 ```bash
 PRODUCT_SERVER_HOST=localhost
 PRODUCT_SERVER_PORT=50051
-RABBITMQ_HOST=localhost
-RABBITMQ_QUEUE=product_queue
+
 ```
 Then: 
 
@@ -105,8 +97,7 @@ Add the following env variables to your .env file:
 
 ```bash
 GRPC_SERVER_PORT=50051
-RABBITMQ_HOST=localhost
-RABBITMQ_PORT=5672
+
 ```
 Then:
 
@@ -122,10 +113,4 @@ python main.py  # or the main server file
 
 ---
 
-### 4. Start RabbitMQ 
-To start RabbitMQ, first ensure you have it properly installed along with Erlang/OTP (which is required for RabbitMQ to run). Once installed, you can start the RabbitMQ server by running the appropriate command for your operating system.
 
-Instructions to install rabbitMQ:  
-👉 `https://www.rabbitmq.com/docs/download`
-
-After starting the server, you can access the RabbitMQ management interface by navigating to http://localhost:15672/ in your web browser. The default credentials for this interface are username **guest** and password **guest**.
