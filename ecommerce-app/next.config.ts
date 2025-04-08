@@ -22,10 +22,6 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'cdn.lorem.space',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.freepik.com', 
       }
     ],
   },
