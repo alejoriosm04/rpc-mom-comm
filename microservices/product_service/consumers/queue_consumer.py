@@ -1,13 +1,17 @@
 import json
 import logging
 import aiohttp
+import os
+from dotenv import load_dotenv
 from aio_pika import connect_robust
 from config.database import products_collection
 
 logger = logging.getLogger(__name__)
 
-RABBITMQ_URL = "amqp://guest:guest@localhost/"
-QUEUE_NAME = "product_requests"
+load_dotenv()
+
+RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost/")
+QUEUE_NAME = os.getenv("QUEUE_NAME", "product_queue")
 
 async def process_message(message):
     async with message.process():

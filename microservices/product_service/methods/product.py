@@ -14,9 +14,9 @@ async def get_products() -> List[dict]:
             logger.info(f"Raw MongoDB document: {document}")
             # Convert ObjectId to int if it exists
             if "_id" in document:
-                #document["_id"] = int(document["_id"])
-                document["id"] = str(document["_id"])
-                del document["_id"]
+                document["_id"] = int(document["_id"])
+                # document["id"] = str(document["_id"])
+                # del document["_id"]
             products.append(document)
         logger.info(f"Retrieved {len(products)} products from database")
         return products

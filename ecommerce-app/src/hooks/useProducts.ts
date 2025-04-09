@@ -10,6 +10,7 @@ export const useProducts = (initialPage: number = 1, initialLimit: number = 12) 
   const [page, setPage] = useState(initialPage);
   const [total, setTotal] = useState(0);
   const [clientId, setClientId] = useState<string | null>(null);
+  const wsBaseUrl = process.env.NEXT_PUBLIC_WS_URL;
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -25,7 +26,7 @@ export const useProducts = (initialPage: number = 1, initialLimit: number = 12) 
   useEffect(() => {
     if (!clientId) return;
 
-    const socket = new WebSocket(`ws://localhost:8000/ws/${clientId}`);
+    const socket = new WebSocket(`${wsBaseUrl}/${clientId}`);
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
