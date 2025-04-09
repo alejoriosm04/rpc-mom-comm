@@ -8,8 +8,8 @@ router = APIRouter(prefix="/api/products", tags=["Products"])
 
 @router.get("/", response_model=ProductsResponse)
 @limiter.limit("60/minute")
-async def get_products(request: Request, page: int = Query(1), limit: int = Query(12)):
-    products = await get_products_grpc()
+async def get_products(request: Request, page: int = Query(1), limit: int = Query(12), client_id: str = Query(None)):
+    products = await get_products_grpc(client_id)
     total = len(products)
     start = (page - 1) * limit
     end = start + limit

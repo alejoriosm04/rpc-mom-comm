@@ -1,5 +1,6 @@
 import json
 import logging
+import aiohttp
 from aio_pika import connect_robust
 from config.database import products_collection
 
@@ -14,11 +15,22 @@ async def process_message(message):
             data = json.loads(message.body)
             if data.get("operation") == "get_products":
                 logger.info("Procesando operación encolada: get_products")
+                products = []
                 cursor = products_collection.find()
                 async for doc in cursor:
-                    logger.debug(f"Producto: {doc}")
+                    if "_id" in doc:
+                        doc["_id"] = str(doc["_id"])
+                    products.append(doc)
                 logger.info("Productos procesados desde cola.")
-            # Agrega más operaciones si lo necesitas
+
+                client_id = data.get("client_id")
+                if client_id:
+                    logger.info(f"Enviando productos al cliente {client_id} vía API Gateway.")
+                    async with aiohttp.ClientSession() as session:
+                        await session.post(
+                            "http://localhost:8000/push/products",
+                            json={"client_id": client_id, "products": products}
+                        )
         except Exception as e:
             logger.error(f"Error procesando mensaje de cola: {str(e)}")
 

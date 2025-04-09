@@ -6,6 +6,7 @@ from config.rabbitmq import get_rabbitmq_connection
 QUEUE_NAME = "product_requests"
 
 async def enqueue_product_request(payload: dict):
+    print("Enqueuing request:", payload)
     connection = await get_rabbitmq_connection()
     async with connection:
         channel = await connection.channel()

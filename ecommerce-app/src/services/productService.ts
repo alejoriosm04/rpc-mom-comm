@@ -3,10 +3,11 @@ import { ProductsResponse } from '../types/product';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.escuelajs.co/api/v1';
 
 export const productService = {
-  async getProducts(page: number = 1, limit: number = 12): Promise<ProductsResponse> {
+  async getProducts(page: number = 1, limit: number = 12, client_id?: string): Promise<ProductsResponse> {
     try {
       const offset = (page - 1) * limit;
-      const response = await fetch(`${API_URL}/products/?offset=${offset}&limit=${limit}`);
+      const query = `offset=${offset}&limit=${limit}` + (client_id ? `&client_id=${client_id}` : '');
+      const response = await fetch(`${API_URL}/products/?${query}`);
       if (!response.ok) throw new Error('Failed to fetch products');
   
       // ✅ Esta línea fue cambiada

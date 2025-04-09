@@ -8,7 +8,7 @@ from methods.queue import enqueue_product_request
 
 logger = logging.getLogger(__name__)
 
-async def get_products_grpc_fallback():
+async def get_products_grpc_fallback(client_id: str = None):
     try:
         stub = get_product_stub()
         request = product_pb2.ProductRequest()
@@ -18,7 +18,7 @@ async def get_products_grpc_fallback():
         logger.error(f"Error en gRPC: {e}")
         if e.code() == StatusCode.UNAVAILABLE:
             logger.warning("Microservicio no disponible. Encolando solicitud.")
-            await enqueue_product_request({"operation": "get_products"})
+            await enqueue_product_request({"operation": "get_products", "client_id": client_id})
         return []  # Retornamos lista vacía mientras tanto
 
     products_list = []
