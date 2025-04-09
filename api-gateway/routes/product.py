@@ -1,4 +1,4 @@
-# routes/product.py
+# api-gateway/routes/product.py
 from fastapi import APIRouter, Query, Request
 from models.product import ProductResponse, ProductsResponse
 from methods.product import get_products_grpc_fallback as get_products_grpc

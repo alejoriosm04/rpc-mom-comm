@@ -1,3 +1,4 @@
+# api-gateway/config/rabbitmq.py
 import os
 import aio_pika
 from dotenv import load_dotenv

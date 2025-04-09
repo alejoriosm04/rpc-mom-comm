@@ -1,3 +1,4 @@
+# api-gateway/config/grpc.py
 import grpc
 import os
 from dotenv import load_dotenv

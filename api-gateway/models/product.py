@@ -1,3 +1,4 @@
+# api-gateway/models/product.py
 from typing import List
 from pydantic import BaseModel
 

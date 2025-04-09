@@ -1,3 +1,4 @@
+# api-gateway/config/logging.py
 import logging
 
 def configure_logging():
