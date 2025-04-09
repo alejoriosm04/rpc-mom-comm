@@ -1,7 +1,7 @@
 # routes/product.py
 from fastapi import APIRouter, Query, Request
 from models.product import ProductResponse, ProductsResponse
-from methods.product import get_products_grpc
+from methods.product import get_products_grpc_fallback as get_products_grpc
 from config.limiter import limiter
 
 router = APIRouter(prefix="/api/products", tags=["Products"])

@@ -1,11 +1,14 @@
+# api-gateway/methods/product.py
 import logging
 import grpc.aio
 from config.grpc import get_product_stub
 from pb import product_pb2
+from grpc import StatusCode
+from methods.queue import enqueue_product_request
 
 logger = logging.getLogger(__name__)
 
-async def get_products_grpc():
+async def get_products_grpc_fallback():
     try:
         stub = get_product_stub()
         request = product_pb2.ProductRequest()
@@ -13,7 +16,10 @@ async def get_products_grpc():
         logger.info("Llamada gRPC a GetProducts exitosa.")
     except grpc.aio.AioRpcError as e:
         logger.error(f"Error en gRPC: {e}")
-        return []
+        if e.code() == StatusCode.UNAVAILABLE:
+            logger.warning("Microservicio no disponible. Encolando solicitud.")
+            await enqueue_product_request({"operation": "get_products"})
+        return []  # Retornamos lista vacía mientras tanto
 
     products_list = []
     for product in response.products:
@@ -30,4 +36,4 @@ async def get_products_grpc():
             },
             "images": list(product.images)
         })
-    return products_list    
+    return products_list
