@@ -1,0 +1,6 @@
+motor==3.3.1
+pymongo==4.5.0
+grpcio==1.62.1
+grpcio-tools==1.62.1
+python-dotenv==1.0.1
+protobuf==4.25.3

@@ -1,7 +1,7 @@
 # api-gateway/app.py
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from routes import product, realtime
+from routes import product, realtime, inventory
 from slowapi.errors import RateLimitExceeded
 from config.limiter import limiter, _rate_limit_exceeded_handler
 
@@ -19,4 +19,5 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.include_router(product.router)
+app.include_router(inventory.router)
 app.include_router(realtime.router)
