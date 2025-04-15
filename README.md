@@ -35,6 +35,13 @@ Communication system between Remote Processes with MOM Failover Mechanism.
 
 At the moment, the REST Client is a simple Next.js application that uses the `fetch` API to make requests to the API Gateway.
 
+First, add the following env variables to your `.env.local` file:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
+```
+
 To run the REST Client, you need to have Node.js installed. Then, you can run the following commands:
 
 ```bash
@@ -51,8 +58,6 @@ Then, you can access the REST Client at `http://localhost:3000`.
 
 **Note:** This is the same process to deploy the REST Client in AWS, remember to enable the `3000` port in the AWS Security Group.
 
-Genial, tu README está muy claro. Para incluir la ejecución del **API Gateway** y el **microservicio**, puedes seguir un estilo similar al que usaste para el cliente REST. Aquí te dejo una **propuesta completa** para añadir al README:
-
 ---
 
 ### 2. API Gateway (FastAPI)
@@ -68,7 +73,9 @@ Add the following env variables to your .env file:
 ```bash
 PRODUCT_SERVER_HOST=localhost
 PRODUCT_SERVER_PORT=50051
-
+RABBITMQ_HOST=localhost
+RABBITMQ_QUEUE=product_queue
+RABBITMQ_URL=amqp://guest:guest@localhost/
 ```
 Then: 
 
@@ -95,9 +102,15 @@ To run the microservice:
 
 Add the following env variables to your .env file: 
 
+**Note:** Do not forget to include `MONGODB_URL` in the .env file.
+
 ```bash
 GRPC_SERVER_PORT=50051
-
+DATABASE_NAME=ecommerce-db
+RABBITMQ_HOST=localhost
+RABBITMQ_PORT=5672
+RABBITMQ_URL=amqp://guest:guest@localhost/
+QUEUE_NAME=product_requests
 ```
 Then:
 
@@ -113,4 +126,18 @@ python main.py  # or the main server file
 
 ---
 
+### 4. MOM Failover Mechanism (RabbitMQ)
+
+To run the MOM Failover Mechanism:
+
+```bash
+# latest RabbitMQ 4.x
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+```
+
+> ✅ This will start the RabbitMQ server that listens for product requests.
+
+**Note:** If you want to try the failover mechanism, turn off the microservice, reload the `products` page in the Next.js application and turn on the microservice again.
+
+---
 
