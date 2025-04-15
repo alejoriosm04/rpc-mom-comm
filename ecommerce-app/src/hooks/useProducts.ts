@@ -31,7 +31,11 @@ export const useProducts = (initialPage: number = 1, initialLimit: number = 12) 
       try {
         const data = JSON.parse(event.data);
         if (data.products) {
-          setProducts(data.products);
+          const productsWithUniqueIds = data.products.map((product: Product, index: number) => ({
+            ...product,
+            id: product.id ? `${product.id}-${clientId}` : `temp-${index}`
+          }));
+          setProducts(productsWithUniqueIds);
           setTotal(data.products.length);
           setLoading(false);
           setError(null);
@@ -41,7 +45,7 @@ export const useProducts = (initialPage: number = 1, initialLimit: number = 12) 
       }
     };
     return () => socket.close();
-  }, [clientId]);
+  }, [clientId, wsBaseUrl]);
 
   useEffect(() => {
     if (!clientId) return;
