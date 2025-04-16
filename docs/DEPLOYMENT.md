@@ -25,6 +25,7 @@ This document provides step-by-step instructions for deploying the project on a 
    - Click on the instance ID
    - Navigate to the "Security" tab
    - Click on the Security Group ID
+  ![image](https://github.com/user-attachments/assets/33a05b99-4ace-4b9d-811e-f791f385bd70)
 
 2. Add the following Inbound Rules:
    - Rule 1:
@@ -39,6 +40,8 @@ This document provides step-by-step instructions for deploying the project on a 
      - Type: Custom TCP
      - Port: 15672
      - Source: 0.0.0.0/0
+
+![image](https://github.com/user-attachments/assets/8ebe8552-f429-4bdd-81ca-d78ea0bbbc3b)
 
 ## System Setup
 
@@ -72,7 +75,7 @@ This document provides step-by-step instructions for deploying the project on a 
 
 2. Start the services using Docker Compose:
    ```bash
-   docker-compose up -d --build
+   sudo docker-compose up -d --build
    ```
 
 ## Service Ports
@@ -87,7 +90,7 @@ The following services will be available after deployment:
 To verify the deployment:
 1. Check if containers are running:
    ```bash
-   docker ps
+   sudo docker ps
    ```
 2. Access the services through their respective ports
 3. Monitor the RabbitMQ management interface at `http://<instance-public-ip>:15672`
@@ -97,7 +100,7 @@ To verify the deployment:
 If you encounter any issues:
 1. Check container logs:
    ```bash
-   docker-compose logs
+   sudo docker-compose logs
    ```
 2. Verify environment variables are correctly set
 3. Ensure all required ports are open in the security group
@@ -110,11 +113,11 @@ If you encounter any issues:
 
 To stop the services:
 ```bash
-docker-compose down
+sudo docker-compose down
 ```
 
 To update the deployment:
 ```bash
 git pull
-docker-compose up -d --build
+sudo docker-compose up -d --build
 ``` 
