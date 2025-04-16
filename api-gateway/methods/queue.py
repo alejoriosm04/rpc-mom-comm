@@ -17,3 +17,15 @@ async def enqueue_product_request(payload: dict):
             message,
             routing_key=QUEUE_NAME,
         )
+
+async def enqueue_inventory_request(payload: dict):
+    connection = await get_rabbitmq_connection()
+    async with connection:
+        channel = await connection.channel()
+        await channel.declare_queue(INVENTORY_QUEUE, durable=True)
+
+        message = Message(json.dumps(payload).encode())
+        await channel.default_exchange.publish(
+            message,
+            routing_key=INVENTORY_QUEUE,
+        )
