@@ -1,143 +1,204 @@
-## RPC communication system with MOM failure system
 
-Communication system between Remote Processes with MOM Failover Mechanism.
+# 🧩 RPC-MOM Communication System with Failover system
 
-### Architecture Proposal
+This project implements a communication system between distributed microservices using gRPC and RabbitMQ for MOM-based failover. It includes an API Gateway(FastAPI), a REST Client (Next.js), and microservices for products, inventory, and orders with real-time notifications.
+
+---
+
+## 📦 Architecture
 
 ![image](https://github.com/user-attachments/assets/d8fd110f-116f-483d-8341-9d52f9809936)
 
-### To-Do List
+---
 
-- [X] Implement the REST Client.
-- [X] Implement the API Gateway.
-- [X] Implement the RPC communication system.
-- [X] Implement the microservice 1.
-- [ ] Implement the microservice 2.
-- [ ] Implement the microservice 3.
-- [X] Implement the MOM Failover Mechanism.
-- [ ] Create the documentation.
+## ✅ Features
 
-### 📁 Project structure
+- gRPC communication between services
+- RabbitMQ as MOM failover mechanism
+- Queued processing when services are down
+- Real-time feedback via WebSockets (orders and product updates)
+- REST API Gateway with API Key authentication
+- Rate limiting per endpoint
+- MongoDB database for persistence
+- Docker support for all services
+
+---
+
+## 📁 Project Structure
 
 ```
 .
-├── README.md
-├── api-gateway/
-├── db/
-├── docker-compose.yml
-├── docs/
-├── ecommerce-app/ <--- REST Client (Next.js)
+├── api-gateway/                 # FastAPI Gateway (gRPC + WebSocket + queue fallback)
+├── ecommerce-app/              # Next.js Client (REST consumer)
 ├── microservices/
-└── mom/
+│   ├── product_service/
+│   ├── inventory_service/
+│   └── order_service/
+├── docker-compose.yml
+└── README.md
 ```
 
-#### 1. REST Client (Next.js)
+---
 
-At the moment, the REST Client is a simple Next.js application that uses the `fetch` API to make requests to the API Gateway.
+## ⚙️ Environment Variables
 
-First, add the following env variables to your `.env.local` file:
+### ✅ `api-gateway/.env`
 
-```bash
+```env
+PRODUCT_SERVER_HOST=product_service
+PRODUCT_SERVER_PORT=50051
+RABBITMQ_HOST=rabbitmq
+RABBITMQ_QUEUE=product_queue
+RABBITMQ_URL=amqp://guest:guest@rabbitmq/
+INVENTORY_SERVER_HOST=inventory_service
+INVENTORY_SERVER_PORT=50052
+ORDER_SERVER_HOST=order_service
+ORDER_SERVER_PORT=50053
+API_KEY=mysecretkey123
+API_KEY_NAME=x-api-key
+
+```
+
+### ✅ `microservices/product_service/.env`
+
+```env
+GRPC_SERVER_PORT=50051
+DATABASE_NAME=ecommerce-db
+MONGODB_URL=url
+RABBITMQ_HOST=rabbitmq
+RABBITMQ_PORT=5672
+RABBITMQ_URL=amqp://guest:guest@rabbitmq/
+QUEUE_NAME=product_requests
+API_GATEWAY_URL=http://api-gateway:8000
+INVENTORY_SERVER_HOST=inventory_service
+INVENTORY_SERVER_PORT=50052
+
+```
+
+### ✅ `microservices/inventory_service/.env`
+
+```env
+MONGODB_URL=url
+DATABASE_NAME=ecommerce-db
+
+RABBITMQ_URL=amqp://guest:guest@rabbitmq/
+QUEUE_NAME=inventory_queue
+
+INVENTORY_SERVER_HOST=inventory_service
+INVENTORY_SERVER_PORT=50052
+
+PRODUCT_SERVER_HOST=product_service
+PRODUCT_SERVER_PORT=50051
+
+ORDER_SERVER_HOST=order_service
+ORDER_SERVER_PORT=50053
+
+```
+
+### ✅ `microservices/order_service/.env`
+
+```env
+GRPC_SERVER_PORT=50053
+
+MONGODB_URL=url
+DATABASE_NAME=ecommerce-db
+
+RABBITMQ_URL=amqp://guest:guest@rabbitmq/
+QUEUE_NAME=order_queue
+
+API_GATEWAY_URL=http://api-gateway:8000
+
+PRODUCT_SERVER_HOST=product_service
+PRODUCT_SERVER_PORT=50051
+
+INVENTORY_SERVER_HOST=inventory_service
+INVENTORY_SERVER_PORT=50052 
+
+
+```
+
+### ✅ `ecommerce-app/.env.local`
+
+```env
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
 NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
+NEXT_PUBLIC_API_KEY=mysecretkey123  
+
 ```
 
-To run the REST Client, you need to have Node.js installed. Then, you can run the following commands:
+---
 
-```bash
-npm install
-npm run dev
-```
+## 🚀 Running the Project
 
-Otherwise, you can use the `docker-compose.yml` file to run the REST Client.
+### Step 1: Build and run all services
 
 ```bash
 docker-compose up -d --build
 ```
-Then, you can access the REST Client at `http://localhost:3000`.
 
-**Note:** This is the same process to deploy the REST Client in AWS, remember to enable the `3000` port in the AWS Security Group.
+### Step 2: Access the services
 
----
-
-### 2. API Gateway (FastAPI)
-
-**Note:** Duplicate the pb folder in the api-gateway folder and add it in the product-service folder to avoid errors
-
-The API Gateway is built with FastAPI and acts as the entry point for all requests. It communicates with the microservices using gRPC.
-
-To run the API Gateway:
-
-Add the following env variables to your .env file: 
-
-```bash
-PRODUCT_SERVER_HOST=localhost
-PRODUCT_SERVER_PORT=50051
-RABBITMQ_HOST=localhost
-RABBITMQ_QUEUE=product_queue
-RABBITMQ_URL=amqp://guest:guest@localhost/
-```
-Then: 
-
-```bash
-cd api-gateway
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app:app --reload 
-```
-
-Then, access the documentation at:  
-👉 `http://localhost:8000/docs`
-
-> ℹ️ Make sure your microservices are running before calling the API Gateway.
+- **API Gateway** → [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Next.js Client** → [http://localhost:3000](http://localhost:3000)
+- **RabbitMQ Dashboard** → [http://localhost:15672](http://localhost:15672)  
 
 ---
 
-### 3. Microservice 1 (Products Service - gRPC)
+## 💡 Features Tested
 
-This microservice provides product data via gRPC. It must be running so the API Gateway can fetch data through it.
+### ✅ Real-time Orders (WebSocket)
 
-To run the microservice:
+- Orders show a message like `"Your order has been confirmed"` or `"Queued"` in real-time.
+- If `order_service` is down, the request is queued and the client is notified.
+- When `order_service` comes back, the order is processed and the client is notified via WebSocket.
 
-Add the following env variables to your .env file: 
+### ✅ Real-time Product Updates
 
-**Note:** Do not forget to include `MONGODB_URL` in the .env file.
-
-```bash
-GRPC_SERVER_PORT=50051
-DATABASE_NAME=ecommerce-db
-RABBITMQ_HOST=localhost
-RABBITMQ_PORT=5672
-RABBITMQ_URL=amqp://guest:guest@localhost/
-QUEUE_NAME=product_requests
-```
-Then:
-
-```bash
-cd microservices/product_service
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python main.py  # or the main server file
-```
-
-> ✅ This will start the gRPC server that listens for product requests.
+- The system listens for `/push/products` via WebSocket.
+- When products are updated (stock changes), the UI reflects them automatically.
 
 ---
 
-### 4. MOM Failover Mechanism (RabbitMQ)
+## 🔐 API Key Protection
 
-To run the MOM Failover Mechanism:
+All protected routes require the following header:
 
-```bash
-# latest RabbitMQ 4.x
-docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+```
+x-api-key: supersecretkey
 ```
 
-> ✅ This will start the RabbitMQ server that listens for product requests.
+This applies to:
 
-**Note:** If you want to try the failover mechanism, turn off the microservice, reload the `products` page in the Next.js application and turn on the microservice again.
+- `/api/products/`
+- `/api/orders/`
+- `/api/inventory/check`
 
 ---
 
+## 🧪 Testing Failover
+
+1. Stop a microservice (e.g. `order_service`).
+2. Make a request (e.g. Add to Cart).
+3. You'll see a message like: `Order queued. Waiting for confirmation...`
+4. Start `order_service` again:
+   ```bash
+   docker-compose up -d order_service
+   ```
+5. The client will receive real-time confirmation via WebSocket.
+
+Claro, aquí tienes **solo la sección nueva** que debes añadir al final del README para dejar constancia de cómo se hicieron las pruebas:
+
+---
+
+## 🧪 Manual Testing Summary
+
+- ✅ The system was tested using Docker containers for all microservices (`product_service`, `order_service`, `inventory_service`, `api-gateway`, `rabbitmq`).
+- ✅ The client (`ecommerce-app`) was run locally using `npm run dev` for development and WebSocket debugging purposes.
+
+### 🔁 Run the frontend locally
+
+```bash
+cd ecommerce-app
+npm install
+npm run dev
+```

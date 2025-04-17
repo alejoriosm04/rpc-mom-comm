@@ -11,21 +11,43 @@ interface ProductCardProps {
 
 export const ProductCard = ({ product }: ProductCardProps) => {
   const [message, setMessage] = useState('');
+  const [statusType, setStatusType] = useState<'success' | 'warning' | 'error' | null>(null);
+  const [loading, setLoading] = useState(false);
+
   const clientId =
     typeof window !== 'undefined' ? localStorage.getItem('client_id') : '';
 
   const handleOrder = async () => {
+    if (!clientId) return;
+
+    setLoading(true);
+    setMessage('');
+    setStatusType(null);
+
     try {
-      const res = await orderService.createOrder(
-        Number(product.id),
-        1,
-        clientId || ''
-      );
+      const res = await orderService.createOrder(Number(product.id), 1, clientId);
+
       setMessage(res.message || 'Order created successfully');
-    } catch (err) {
-      setMessage('Failed to create order');
+      setStatusType(
+        res.status === 'confirmed'
+          ? 'success'
+          : res.status === 'pending'
+          ? 'warning'
+          : 'error'
+      );
+    } catch {
+      setMessage('Unexpected error while creating order');
+      setStatusType('error');
+    } finally {
+      setLoading(false);
+      setTimeout(() => {
+        setMessage('');
+        setStatusType(null);
+      }, 6000);
     }
   };
+
+  const isOutOfStock = product.stock === 0;
 
   return (
     <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition p-4">
@@ -77,15 +99,29 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </div>
 
           <button
-            className="w-full bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-800 transition disabled:opacity-50"
-            disabled={product.stock === 0}
+            disabled={loading || isOutOfStock}
             onClick={handleOrder}
+            className={`w-full px-4 py-2 rounded-lg text-sm font-medium transition ${
+              isOutOfStock
+                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                : 'bg-purple-700 text-white hover:bg-purple-800'
+            }`}
           >
-            {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+            {loading ? 'Processing...' : isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
           </button>
 
           {message && (
-            <p className="text-xs mt-2 text-center text-gray-600">{message}</p>
+            <p
+              className={`text-xs mt-2 text-center font-medium ${
+                statusType === 'success'
+                  ? 'text-green-600'
+                  : statusType === 'warning'
+                  ? 'text-yellow-600'
+                  : 'text-red-600'
+              }`}
+            >
+              {message}
+            </p>
           )}
         </div>
       </div>

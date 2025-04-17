@@ -27,15 +27,6 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-  ecommerce-client:
-    build: ./ecommerce-app
-    container_name: ecommerce-client
-    ports:
-      - "3000:3000"
-    env_file:
-      - ./ecommerce-app/.env.local
-    depends_on:
-      - api-gateway
 
   inventory_service:
     build: ./microservices/inventory_service

@@ -23,13 +23,17 @@ export const useProducts = (initialPage: number = 1, initialLimit: number = 12) 
     }
   }, []);
 
+  // ✅ WebSocket connection
   useEffect(() => {
     if (!clientId) return;
 
     const socket = new WebSocket(`${wsBaseUrl}/${clientId}`);
+
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+
+        // ✅ Si llegan productos en tiempo real
         if (data.products) {
           const productsWithUniqueIds = data.products.map((product: Product, index: number) => ({
             ...product,
@@ -40,13 +44,37 @@ export const useProducts = (initialPage: number = 1, initialLimit: number = 12) 
           setLoading(false);
           setError(null);
         }
+
+        // ✅ Si llega estado de orden
+        if (data.type === 'order_status') {
+          const { product_id, status, message, quantity } = data;
+
+          // 🔄 Actualiza el stock localmente si la orden fue confirmada
+          if (status === 'confirmed') {
+            setProducts(prev =>
+              prev.map(p => {
+                const cleanId = p.id.toString().split('-')[0];
+                if (cleanId === product_id.toString()) {
+                  return { ...p, stock: Math.max(0, p.stock - quantity) };
+                }
+                return p;
+              })
+            );
+          }
+
+          // ✅ Mostrar alerta simple (puedes cambiar por toast)
+          alert(`${message} (Status: ${status})`);
+        }
+
       } catch (err) {
         console.error("WebSocket parsing error:", err);
       }
     };
+
     return () => socket.close();
   }, [clientId, wsBaseUrl]);
 
+  // ✅ Carga inicial de productos
   useEffect(() => {
     if (!clientId) return;
 
