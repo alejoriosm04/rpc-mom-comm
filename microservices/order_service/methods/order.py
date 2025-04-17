@@ -11,18 +11,24 @@ class OrderServiceServicer(order_pb2_grpc.OrderServiceServicer):
         quantity = request.quantity
         client_id = request.client_id
 
-        logger.info(f"➡️ Verificando inventario para producto {product_id} con cantidad {quantity}")
+        logger.info(f"Checking inventory for product {product_id} with quantity {quantity}")
         has_stock = await check_inventory(product_id, quantity)
         if not has_stock:
-            logger.warning("❌ No hay suficiente stock.")
-            return order_pb2.OrderResponse(success=False, message="No hay suficiente stock en inventario.")
+            logger.warning("Not enough stock available.")
+            return order_pb2.OrderResponse(
+                success=False,
+                message="Insufficient stock available in inventory."
+            )
 
-        logger.info("Stock disponible. Procediendo a crear orden.")
+        logger.info("Stock available. Proceeding to create order.")
         await save_order(product_id, quantity, client_id)
 
-        logger.info("Descontando stock...")
+        logger.info("Reducing stock...")
         stock_reduced = await reduce_stock(product_id, quantity)
         if not stock_reduced:
-            logger.warning("No se pudo descontar el stock (posible condición de carrera).")
+            logger.warning("Stock could not be reduced (possible race condition).")
 
-        return order_pb2.OrderResponse(success=True, message="Orden creada exitosamente.")
+        return order_pb2.OrderResponse(
+            success=True,
+            message="Order created successfully."
+        )
