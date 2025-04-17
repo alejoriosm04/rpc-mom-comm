@@ -41,7 +41,9 @@ Esta arquitectura híbrida proporciona tanto la eficiencia de RPC como la robust
 | Código | Título                                 | Descripción                                                                                                                                         |
 |--------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
 | RNF01  | Alta disponibilidad                    | El sistema deberá estar disponible incluso si uno o más componentes fallan, gracias a mecanismos de failover y reintentos. La caída de un microservicio no debe afectar la disponibilidad general. |
+| RNF02  | Escalabilidad horizontal               | El sistema deberá poder escalar horizontalmente, permitiendo múltiples instancias de microservicios para atender mayor carga. Los microservicios deben ejecutarse como contenedores y la infraestructura debe soportar balanceo de carga. |
 | RNF03  | Seguridad de la comunicación y acceso  | El sistema deberá contar con mecanismos de autenticación y autorización, además de cifrado en las comunicaciones. Las API deben tener autenticación por token y el acceso debe estar controlado por roles. |
+| RNF04  | Mantenibilidad del código y despliegue | El sistema deberá tener código modular, documentado y con capacidad de despliegue automatizado mediante Docker.                                     |
 
 #### 1.2. Que aspectos NO cumplió o desarrolló de la actividad propuesta por el profesor (requerimientos funcionales y no funcionales)
 
@@ -49,8 +51,6 @@ Esta arquitectura híbrida proporciona tanto la eficiencia de RPC como la robust
 
 | Código | Título                                 | Descripción                                                                                                                                         |
 |--------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| RNF02  | Escalabilidad horizontal               | El sistema deberá poder escalar horizontalmente, permitiendo múltiples instancias de microservicios para atender mayor carga. Los microservicios deben ejecutarse como contenedores y la infraestructura debe soportar balanceo de carga. |
-| RNF04  | Mantenibilidad del código y despliegue | El sistema deberá tener código modular, documentado y con capacidad de despliegue automatizado mediante Docker.                                     |
 | RNF05  | Monitoreo, logging y testing continuo  | El sistema deberá proporcionar métricas, logs y alertas que permitan su monitoreo y diagnóstico continuo. Además, deberá incorporar pruebas automáticas (unitarias) como parte del flujo de desarrollo. |
 
 
@@ -119,111 +119,29 @@ El sistema está compuesto por una arquitectura de microservicios donde cada com
 
 #### 3.2 Cómo compilar y ejecutar el proyecto
 
-A continuación se detallan los pasos para compilar y ejecutar el proyecto paso a paso. Sin embargo, el proyecto puede ejecutarse directamente con el archivo `docker-compose.yml` que se encuentra en la raíz del proyecto. Para más detalles, ver la sección [4.1 Despliegue](#41-despliegue).
+El proyecto puede ejecutarse directamente con Docker Compose o Docker Swarm.
 
 ##### Requisitos previos
 
-- Tener instalado Docker y Docker Compose
-- Tener instalado Python 3.10 o superior
-- Tener instalado Node.js 18 o superior
+- Tener instalado Docker, Docker Compose y Docker Swarm.
 - El proyecto se puede ejecutar localmente o en un servidor remoto, tanto en un entorno Linux como en Windows.
 
 ##### Despliegue completo del sistema
 
-###### 1. REST Client (Next.js)
-
-First, add the following env variables to your `.env.local` file:
+Para desplegar el proyecto en un entorno local o remoto que no simule alta disponibilidad, se debe ejecutar el archivo `docker-compose.yml` que se encuentra en la raíz del proyecto. De esta forma, se levantan todos los servicios necesarios para que el proyecto funcione.
 
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:8000/api
-NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
+docker-compose up -d --build
 ```
 
-To run the REST Client, you need to have Node.js installed. Then, you can run the following commands:
+Si desea simular una **alta disponibilidad**, se debe ejecutar el archivo `deploy.sh` que se encuentra en la raíz del proyecto. De esta forma, se levantan todos los servicios necesarios para que el proyecto funcione, pero con la diferencia de que se levantan $n$ instancias de cada servicio, simulando una arquitectura de microservicios con alta disponibilidad.
 
 ```bash
-npm install
-npm run dev
+docker swarm init
+./deploy.sh   # para desplegar el proyecto
+docker service ls   # para verificar que se han creado los servicios
+docker stack rm ecommerce-app   # para eliminar los servicios
 ```
-
-Then, you can access the REST Client at `http://localhost:3000`.
-
----
-
-###### 2. API Gateway (FastAPI)
-
-**Note:** Duplicate the pb folder in the api-gateway folder and add it in the product-service folder to avoid errors
-
-To run the API Gateway:
-
-Add the following env variables to your .env file: 
-
-```bash
-PRODUCT_SERVER_HOST=localhost
-PRODUCT_SERVER_PORT=50051
-RABBITMQ_HOST=localhost
-RABBITMQ_QUEUE=product_queue
-RABBITMQ_URL=amqp://guest:guest@localhost/
-```
-Then: 
-
-```bash
-cd api-gateway
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app:app --reload 
-```
-
-Then, access the documentation at:  
-👉 `http://localhost:8000/docs`
-
-> ℹ️ Make sure your microservices are running before calling the API Gateway.
-
----
-
-###### 3. Microservice 1 (Products Service - gRPC)
-
-This microservice provides product data via gRPC. It must be running so the API Gateway can fetch data through it.
-
-To run the microservice:
-
-Add the following env variables to your .env file: 
-
-**Note:** Do not forget to include `MONGODB_URL` in the .env file.
-
-```bash
-GRPC_SERVER_PORT=50051
-DATABASE_NAME=ecommerce-db
-RABBITMQ_HOST=localhost
-RABBITMQ_PORT=5672
-RABBITMQ_URL=amqp://guest:guest@localhost/
-QUEUE_NAME=product_requests
-```
-Then:
-
-```bash
-cd microservices/product_service
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python main.py  # or the main server file
-```
-
-> ✅ This will start the gRPC server that listens for product requests.
-
----
-
-###### 4. MOM Failover Mechanism (RabbitMQ)
-
-To run the MOM Failover Mechanism:
-
-```bash
-# latest RabbitMQ 4.x
-docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
-```
-
-> ✅ This will start the RabbitMQ server that listens for product requests.
 
 ---
 
@@ -239,21 +157,7 @@ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-manag
 
 #### 4.1 Despliegue
 
-Para desplegar el proyecto en un entorno local que no simule alta disponibilidad, se debe ejecutar el archivo `docker-compose.yml` que se encuentra en la raíz del proyecto. De esta forma, se levantan todos los servicios necesarios para que el proyecto funcione.
-
-```bash
-docker-compose up -d --build
-```
-Si desea simular una **alta disponibilidad**, se debe ejecutar el archivo `docker-stack.yml` que se encuentra en la raíz del proyecto. De esta forma, se levantan todos los servicios necesarios para que el proyecto funcione, pero con la diferencia de que se levantan $n$ instancias de cada servicio, simulando una arquitectura de microservicios con alta disponibilidad.
-
-```bash
-docker swarm init
-docker stack deploy -c docker-stack.yml ecommerce-app
-docker service ls   # para verificar que se han creado los servicios
-docker stack rm ecommerce-app   # para eliminar los servicios
-```
-
-Para más información sobre el despliegue en producción en una instancia **EC2 de AWS**, ver el archivo [DEPLOYMENT.md](insertar-link-despues). Aquí se describe paso a paso el despliegue del proyecto en una instancia de AWS.
+Para más información sobre el despliegue en producción en una instancia **EC2 de AWS**, ver el archivo [DEPLOYMENT.md](insertar-link-despues). Aquí se describe paso a paso el despliegue del proyecto en una instancia EC2 de AWS.
 
 #### 4.2 IP o nombre de dominio del servidor
 
