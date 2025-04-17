@@ -1,20 +1,20 @@
-# api-gateway/routes/order.py
-from fastapi import APIRouter, Request
-from pydantic import BaseModel
-from methods.order import create_order_grpc
+# routes/order.py
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
 from config.limiter import limiter
+from models.order import OrderRequest, OrderResponse
+from methods.order import create_order_grpc
+from auth.auth import validate_api_key
 
 router = APIRouter(prefix="/api/orders", tags=["Orders"])
 
-class OrderRequest(BaseModel):
-    product_id: int
-    quantity: int
-    client_id: str
-
-@router.post("/")
-@limiter.limit("30/minute")
-async def create_order(request: Request, order: OrderRequest):
+@router.post("/", response_model=OrderResponse)
+@limiter.limit("60/minute")
+async def create_order(
+    request: Request,
+    order: OrderRequest,
+    _auth: None = Depends(validate_api_key)
+):
     result = await create_order_grpc(
         product_id=order.product_id,
         quantity=order.quantity,
