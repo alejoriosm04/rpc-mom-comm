@@ -39,8 +39,16 @@ services:
 
   inventory_service:
     build: ./microservices/inventory_service
+    container_name: inventory_service
     env_file:
       - ./microservices/inventory_service/.env
     depends_on:
       - rabbitmq
 
+  order_service:
+    build: ./microservices/order_service
+    container_name: order_service
+    env_file:
+      - ./microservices/order_service/.env
+    depends_on:
+      - rabbitmq

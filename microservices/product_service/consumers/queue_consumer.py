@@ -7,7 +7,7 @@ from aio_pika import connect_robust
 from config.database import products_collection
 import asyncio
 
-
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -43,14 +43,15 @@ async def process_message(message):
 
 async def start_consumer():
     max_retries = 10
-    retry_delay = 5  # segundos
+    retry_delay = 5  
 
     for attempt in range(1, max_retries + 1):
         try:
             logger.info(f"[RabbitMQ] Intento {attempt}: conectando a {RABBITMQ_URL}")
             connection = await connect_robust(RABBITMQ_URL)
             channel = await connection.channel()
-            queue = await channel.declare_queue(QUEUE_NAME, durable=True)
+            queue = await channel.declare_queue(QUEUE_NAME, durable=True, auto_delete=False, passive=False)
+
             await queue.consume(process_message)
             logger.info("[RabbitMQ] Conexión exitosa. Consumidor activo.")
             break

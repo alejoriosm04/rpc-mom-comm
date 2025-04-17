@@ -19,6 +19,11 @@ class InventoryServiceStub(object):
                 request_serializer=inventory__pb2.InventoryRequest.SerializeToString,
                 response_deserializer=inventory__pb2.InventoryResponse.FromString,
                 )
+        self.ReduceStock = channel.unary_unary(
+                '/inventory.InventoryService/ReduceStock',
+                request_serializer=inventory__pb2.InventoryUpdateRequest.SerializeToString,
+                response_deserializer=inventory__pb2.InventoryUpdateResponse.FromString,
+                )
 
 
 class InventoryServiceServicer(object):
@@ -30,6 +35,13 @@ class InventoryServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ReduceStock(self, request, context):
+        """<-- nuevo
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_InventoryServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -37,6 +49,11 @@ def add_InventoryServiceServicer_to_server(servicer, server):
                     servicer.CheckInventory,
                     request_deserializer=inventory__pb2.InventoryRequest.FromString,
                     response_serializer=inventory__pb2.InventoryResponse.SerializeToString,
+            ),
+            'ReduceStock': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReduceStock,
+                    request_deserializer=inventory__pb2.InventoryUpdateRequest.FromString,
+                    response_serializer=inventory__pb2.InventoryUpdateResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -62,5 +79,22 @@ class InventoryService(object):
         return grpc.experimental.unary_unary(request, target, '/inventory.InventoryService/CheckInventory',
             inventory__pb2.InventoryRequest.SerializeToString,
             inventory__pb2.InventoryResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ReduceStock(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/inventory.InventoryService/ReduceStock',
+            inventory__pb2.InventoryUpdateRequest.SerializeToString,
+            inventory__pb2.InventoryUpdateResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

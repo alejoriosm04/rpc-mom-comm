@@ -13,8 +13,10 @@ class ProductResponse(BaseModel):
     title: str
     price: float
     description: str
+    stock: int  
     category: Category
     images: List[str]
+
 
 class ProductsResponse(BaseModel):
     products: List[ProductResponse]

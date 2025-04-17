@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0finventory.proto\x12\tinventory\"&\n\x10InventoryRequest\x12\x12\n\nproduct_id\x18\x01 \x01(\x05\"5\n\x11InventoryResponse\x12\x11\n\tavailable\x18\x01 \x01(\x08\x12\r\n\x05stock\x18\x02 \x01(\x05\x32_\n\x10InventoryService\x12K\n\x0e\x43heckInventory\x12\x1b.inventory.InventoryRequest\x1a\x1c.inventory.InventoryResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0finventory.proto\x12\tinventory\"&\n\x10InventoryRequest\x12\x12\n\nproduct_id\x18\x01 \x01(\x05\"5\n\x11InventoryResponse\x12\x11\n\tavailable\x18\x01 \x01(\x08\x12\r\n\x05stock\x18\x02 \x01(\x05\">\n\x16InventoryUpdateRequest\x12\x12\n\nproduct_id\x18\x01 \x01(\x05\x12\x10\n\x08quantity\x18\x02 \x01(\x05\"*\n\x17InventoryUpdateResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x32\xb5\x01\n\x10InventoryService\x12K\n\x0e\x43heckInventory\x12\x1b.inventory.InventoryRequest\x1a\x1c.inventory.InventoryResponse\x12T\n\x0bReduceStock\x12!.inventory.InventoryUpdateRequest\x1a\".inventory.InventoryUpdateResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -25,6 +25,10 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_INVENTORYREQUEST']._serialized_end=68
   _globals['_INVENTORYRESPONSE']._serialized_start=70
   _globals['_INVENTORYRESPONSE']._serialized_end=123
-  _globals['_INVENTORYSERVICE']._serialized_start=125
-  _globals['_INVENTORYSERVICE']._serialized_end=220
+  _globals['_INVENTORYUPDATEREQUEST']._serialized_start=125
+  _globals['_INVENTORYUPDATEREQUEST']._serialized_end=187
+  _globals['_INVENTORYUPDATERESPONSE']._serialized_start=189
+  _globals['_INVENTORYUPDATERESPONSE']._serialized_end=231
+  _globals['_INVENTORYSERVICE']._serialized_start=234
+  _globals['_INVENTORYSERVICE']._serialized_end=415
 # @@protoc_insertion_point(module_scope)

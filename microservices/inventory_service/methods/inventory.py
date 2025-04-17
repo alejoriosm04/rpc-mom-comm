@@ -1,21 +1,19 @@
+from config.database import inventory_collection
+from datetime import datetime
 from config.product_grpc_client import get_product_stub
 from pb import product_pb2
 
-async def check_inventory(product_id: int):
-    stub = get_product_stub()
+async def check_inventory(product_id: int, quantity: int):
+    item = await inventory_collection.find_one({"product_id": product_id})
 
-    # Aquí puedes cambiar por ProductByIdRequest si existe
-    request = product_pb2.ProductRequest()
-    response = await stub.GetProducts(request)
+    if not item or item["stock"] < quantity:
+        return {"available": False, "stock": item["stock"] if item else 0}
 
-    product = next((p for p in response.products if p.id == product_id), None)
+    return {"available": True, "stock": item["stock"]}
 
-    if not product:
-        return {"available": False, "stock": 0}
-
-    # Si lo encuentra, simula que hay stock
-    return {
-        "available": True,
-        "stock": 25,  # Simulado
-        "product_title": product.title
-    }
+async def reduce_stock(product_id: int, quantity: int):
+    result = await inventory_collection.update_one(
+        {"product_id": product_id, "stock": {"$gte": quantity}},
+        {"$inc": {"stock": -quantity}, "$set": {"updated_at": datetime.utcnow()}}
+    )
+    return result.modified_count == 1

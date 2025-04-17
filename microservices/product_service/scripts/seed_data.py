@@ -2,7 +2,6 @@ import asyncio
 import sys
 import os
 
-# Add the project root directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config.database import products_collection
@@ -10,10 +9,8 @@ from models.product import Product, Category
 from datetime import datetime
 
 async def seed_products():
-    # Clear existing data
     await products_collection.delete_many({})
     
-    # Sample categories
     categories = [
         Category(
             id=1,
@@ -35,7 +32,6 @@ async def seed_products():
         )
     ]
 
-    # Sample products
     products = [
         {
             "_id": 1,
@@ -69,7 +65,6 @@ async def seed_products():
         }
     ]
 
-    # Insert products
     for product in products:
         await products_collection.insert_one(product)
         print(f"Inserted product: {product['title']}")

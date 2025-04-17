@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 from concurrent import futures
 from pb import inventory_pb2_grpc
 from config.grpc import InventoryServiceServicer
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 grpc_port = os.getenv("GRPC_SERVER_PORT", "50052")
@@ -15,7 +19,7 @@ async def serve():
     inventory_pb2_grpc.add_InventoryServiceServicer_to_server(InventoryServiceServicer(), server)
     server.add_insecure_port(f'[::]:{grpc_port}')
     await server.start()
-    print(f"InventoryService running on port {grpc_port}")
+    logger.info(f"InventoryService running on port {grpc_port}")
     await server.wait_for_termination()
 
 if __name__ == '__main__':

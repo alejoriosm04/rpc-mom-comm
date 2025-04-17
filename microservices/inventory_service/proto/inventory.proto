@@ -4,6 +4,7 @@ package inventory;
 
 service InventoryService {
   rpc CheckInventory (InventoryRequest) returns (InventoryResponse);
+  rpc ReduceStock (InventoryUpdateRequest) returns (InventoryUpdateResponse); // <-- nuevo
 }
 
 message InventoryRequest {
@@ -13,4 +14,13 @@ message InventoryRequest {
 message InventoryResponse {
   bool available = 1;
   int32 stock = 2;
+}
+
+message InventoryUpdateRequest {
+  int32 product_id = 1;
+  int32 quantity = 2;
+}
+
+message InventoryUpdateResponse {
+  bool success = 1;
 }
