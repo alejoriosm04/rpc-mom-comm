@@ -15,7 +15,7 @@ docker build -t api-gateway ./api-gateway
 
 # Build Product Service
 echo "Building product_service..."
-docker build -t product_servic:latest ./microservices/product_service
+docker build -t product_service ./microservices/product_service
 
 # Build Inventory Service
 echo "Building inventory_service..."
