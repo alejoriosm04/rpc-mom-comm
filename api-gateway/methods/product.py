@@ -13,13 +13,13 @@ async def get_products_grpc_fallback(client_id: str = None):
         stub = get_product_stub()
         request = product_pb2.ProductRequest()
         response = await stub.GetProducts(request)
-        logger.info("Llamada gRPC a GetProducts exitosa.")
+        logger.info("gRPC call to GetProducts successful.")
     except grpc.aio.AioRpcError as e:
-        logger.error(f"Error en gRPC: {e}")
+        logger.error(f"gRPC error: {e}")
         if e.code() == StatusCode.UNAVAILABLE:
-            logger.warning("Microservicio no disponible. Encolando solicitud.")
+            logger.warning("Product microservice unavailable. Enqueuing request.")
             await enqueue_product_request({"operation": "get_products", "client_id": client_id})
-        return []  # Retornamos lista vacía mientras tanto
+        return []  # Return empty list in the meantime
 
     products_list = []
     for product in response.products:
@@ -28,6 +28,7 @@ async def get_products_grpc_fallback(client_id: str = None):
             "title": product.title,
             "price": product.price,
             "description": product.description,
+            "stock": product.stock,
             "category": {
                 "id": product.category.id,
                 "name": product.category.name,
@@ -36,4 +37,5 @@ async def get_products_grpc_fallback(client_id: str = None):
             },
             "images": list(product.images)
         })
+
     return products_list

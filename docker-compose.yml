@@ -1,17 +1,45 @@
 version: "3.8"
+
 services:
-  ecommerce-front:
-    build: ./ecommerce-app
-    container_name: ecommerce-front
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
     ports:
-      - "3000:3000"
-  
+      - "8000:8000"
+    env_file:
+      - ./api-gateway/.env
+    depends_on:
+      - product_service
+      - rabbitmq
+
+  product_service:
+    build: ./microservices/product_service
+    container_name: product_service
+    env_file:
+      - ./microservices/product_service/.env
+    depends_on:
+      - rabbitmq
+
   rabbitmq:
-    image: rabbitmq:4-management
+    image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"  # AMQP protocol port
-      - "15672:15672"  # Management interface port
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - "5672:5672"
+      - "15672:15672"
+
+
+  inventory_service:
+    build: ./microservices/inventory_service
+    container_name: inventory_service
+    env_file:
+      - ./microservices/inventory_service/.env
+    depends_on:
+      - rabbitmq
+
+  order_service:
+    build: ./microservices/order_service
+    container_name: order_service
+    env_file:
+      - ./microservices/order_service/.env
+    depends_on:
+      - rabbitmq

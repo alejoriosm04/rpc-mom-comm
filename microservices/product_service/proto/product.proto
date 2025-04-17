@@ -8,7 +8,7 @@ service ProductService {
   rpc GetProducts (ProductRequest) returns (ProductListResponse);
 }
 
-// Mensaje de solicitud (puedes agregar parámetros si es necesario)
+// Mensaje de solicitud 
 message ProductRequest {}
 
 // Mensaje que define una categoría
@@ -27,7 +27,9 @@ message Product {
   string description = 4;
   Category category = 5;
   repeated string images = 6;
+  int32 stock = 7; 
 }
+
 
 // Mensaje de respuesta que contiene una lista de productos
 message ProductListResponse {
