@@ -3,7 +3,7 @@ import grpc.aio
 from config.grpc import get_order_stub
 from pb import order_pb2
 from grpc import StatusCode
-from methods.queue import enqueue_order_request  # Asegúrate de tener esta función
+from methods.queue import enqueue_order_request
 
 logger = logging.getLogger(__name__)
 
@@ -16,16 +16,17 @@ async def create_order_grpc(product_id: int, quantity: int, client_id: str):
             client_id=client_id
         )
         response = await stub.CreateOrder(request)
-        logger.info("gRPC call to CreateOrder succeeded.")
+        logger.info("✅ gRPC call to CreateOrder succeeded.")
         return {
             "success": response.success,
-            "message": response.message
+            "message": response.message,
+            "status": "confirmed" if response.success else "rejected"
         }
-    
+
     except grpc.aio.AioRpcError as e:
-        logger.error(f"gRPC call to CreateOrder failed: {e}")
+        logger.error(f"❌ gRPC call to CreateOrder failed: {e}")
         if e.code() == StatusCode.UNAVAILABLE:
-            logger.warning("Order microservice is unavailable. Sending request to RabbitMQ queue.")
+            logger.warning("⚠️ Order microservice is unavailable. Sending request to RabbitMQ queue.")
             await enqueue_order_request({
                 "operation": "create_order",
                 "product_id": product_id,
@@ -33,11 +34,13 @@ async def create_order_grpc(product_id: int, quantity: int, client_id: str):
                 "client_id": client_id
             })
             return {
-                "success": False,
-                "message": "Order service is currently unavailable. Request has been queued."
+                "success": True,  
+                "message": "Order service is currently unavailable. Request has been queued.",
+                "status": "pending"
             }
 
         return {
             "success": False,
-            "message": "Unexpected error occurred while processing the order."
+            "message": "Unexpected error occurred while processing the order.",
+            "status": "error"
         }

@@ -6,7 +6,7 @@ import asyncio
 from aio_pika import connect_robust
 from dotenv import load_dotenv
 from methods.order import OrderServiceServicer
-from pb import order_pb2  # ✅ Importar el mensaje correcto de gRPC
+from pb import order_pb2  # gRPC request model
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,30 +22,46 @@ async def process_message(message):
             data = json.loads(message.body)
 
             if data.get("operation") == "create_order":
-                logger.info("Procesando orden desde la cola...")
+                logger.info("📦 Processing order from queue...")
 
-                # Extraer y tipar los campos correctamente
                 product_id = int(data.get("product_id"))
                 quantity = int(data.get("quantity"))
                 client_id = str(data.get("client_id"))
 
-                # ✅ Crear una instancia real del mensaje de gRPC
                 request = order_pb2.OrderRequest(
                     product_id=product_id,
                     quantity=quantity,
                     client_id=client_id
                 )
 
-                # Usar el servicio como siempre
                 service = OrderServiceServicer()
                 response = await service.CreateOrder(request, context=None)
 
                 if response.success:
-                    logger.info("Orden procesada desde cola correctamente.")
+                    logger.info("✅ Order successfully processed from queue.")
                 else:
-                    logger.warning(f"Falló al crear la orden desde la cola: {response.message}")
+                    logger.warning(f"⚠️ Order creation failed: {response.message}")
+
+                # ✅ Notify client via WebSocket through API Gateway
+                if client_id:
+                    try:
+                        async with aiohttp.ClientSession() as session:
+                            await session.post(
+                                f"{API_GATEWAY_URL}/push/orders",
+                                json={
+                                    "client_id": client_id,
+                                    "status": "confirmed" if response.success else "rejected",
+                                    "product_id": product_id,
+                                    "quantity": quantity,
+                                    "message": "Your order has been confirmed." if response.success else "Order rejected."
+                                }
+                            )
+                            logger.info("📨 Order status pushed to API Gateway.")
+                    except Exception as push_err:
+                        logger.warning(f"❌ Failed to push order status to gateway: {push_err}")
+
         except Exception as e:
-            logger.error(f"Error procesando mensaje de RabbitMQ: {str(e)}")
+            logger.error(f"🔥 Error processing RabbitMQ message: {str(e)}")
 
 async def start_consumer():
     max_retries = 30
@@ -53,17 +69,17 @@ async def start_consumer():
 
     for attempt in range(1, max_retries + 1):
         try:
-            logger.info(f"[RabbitMQ] Intento {attempt}: conectando a {RABBITMQ_URL}")
+            logger.info(f"[RabbitMQ] Attempt {attempt}: connecting to {RABBITMQ_URL}")
             connection = await connect_robust(RABBITMQ_URL)
             channel = await connection.channel()
             queue = await channel.declare_queue(QUEUE_NAME, durable=True)
             await queue.consume(process_message)
-            logger.info("[RabbitMQ] Conexión exitosa. Consumidor activo.")
-            await asyncio.Future()  
+            logger.info("[RabbitMQ] Connected and consuming.")
+            await asyncio.Future()  # Keep alive
             break
         except Exception as e:
-            logger.warning(f"[RabbitMQ] Fallo en el intento {attempt}: {str(e)}")
+            logger.warning(f"[RabbitMQ] Connection failed (attempt {attempt}): {str(e)}")
             if attempt == max_retries:
-                logger.error("[RabbitMQ] No se pudo conectar tras múltiples intentos. Abortando.")
+                logger.error("[RabbitMQ] Failed to connect after multiple attempts.")
                 raise e
             await asyncio.sleep(retry_delay)

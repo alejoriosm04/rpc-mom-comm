@@ -1,11 +1,32 @@
+'use client';
+
 import Image from 'next/image';
+import { useState } from 'react';
 import { Product } from '../types/product';
+import { orderService } from '../services/orderService';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+  const [message, setMessage] = useState('');
+  const clientId =
+    typeof window !== 'undefined' ? localStorage.getItem('client_id') : '';
+
+  const handleOrder = async () => {
+    try {
+      const res = await orderService.createOrder(
+        Number(product.id),
+        1,
+        clientId || ''
+      );
+      setMessage(res.message || 'Order created successfully');
+    } catch (err) {
+      setMessage('Failed to create order');
+    }
+  };
+
   return (
     <div className="group bg-white rounded-xl shadow-sm hover:shadow-md transition p-4">
       <div className="relative aspect-square rounded-lg mb-4 overflow-hidden">
@@ -21,10 +42,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </div>
         )}
       </div>
-      
+
       <div className="space-y-3">
         <div className="flex justify-between items-start">
-          <h3 className="font-semibold text-gray-900 line-clamp-2 flex-1">{product.title}</h3>
+          <h3 className="font-semibold text-gray-900 line-clamp-2 flex-1">
+            {product.title}
+          </h3>
           <span className="text-sm text-gray-700 bg-gray-100 px-2 py-1 rounded-full ml-2">
             {product.category.name}
           </span>
@@ -32,6 +55,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
         <p className="text-2xl text-purple-700 font-semibold">
           ${product.price.toFixed(2)}
+        </p>
+
+        <p className="text-sm text-green-700 font-medium">
+          Stock available: {product.stock}
         </p>
 
         <p className="text-gray-600 text-sm line-clamp-3">
@@ -42,18 +69,26 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <span className="text-xs text-gray-500">Category:</span>
-              <span className="text-xs font-medium text-gray-700">{product.category.name}</span>
+              <span className="text-xs font-medium text-gray-700">
+                {product.category.name}
+              </span>
             </div>
-            <span className="text-xs text-gray-500">
-              ID: {product.id}
-            </span>
+            <span className="text-xs text-gray-500">ID: {product.id}</span>
           </div>
 
-          <button className="w-full bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-800 transition">
-            Add to Cart
+          <button
+            className="w-full bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-800 transition disabled:opacity-50"
+            disabled={product.stock === 0}
+            onClick={handleOrder}
+          >
+            {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
           </button>
+
+          {message && (
+            <p className="text-xs mt-2 text-center text-gray-600">{message}</p>
+          )}
         </div>
       </div>
     </div>
   );
-}; 
+};

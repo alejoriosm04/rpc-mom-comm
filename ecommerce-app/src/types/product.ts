@@ -13,7 +13,9 @@ export interface Product {
   description: string;
   category: Category;
   images: string[];
+  stock: number; 
 }
+
 
 export interface ProductsResponse {
   products: Product[];
