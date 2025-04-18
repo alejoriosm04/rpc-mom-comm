@@ -194,11 +194,59 @@ docker stack rm ecommerce-app   # para eliminar los servicios
 
 #### 3.3 Detalles del desarrollo
 
-#### 3.4 Detalles técnicos y configuración
+##### Características testeadas
 
-#### 3.5 Estructura del proyecto
+###### ✅ Real-time Orders (WebSocket)
 
-#### 3.6 Resultados y pantallazos
+- Los pedidos muestran un mensaje como `"Su pedido ha sido confirmado"` o `"En cola"` en tiempo real.
+- Si el `order_service` está inactivo, la solicitud se encola y se notifica al cliente.
+- Cuando el `order_service` vuelve, el pedido se procesa y el cliente es notificado a través de WebSocket.
+
+###### ✅ Real-time Product Updates
+
+- El sistema escucha `/push/products` a través de WebSocket.
+- Cuando los productos se actualizan (cambios de stock), la UI los refleja automáticamente.
+
+###### 🔐 Protección de Clave API
+
+Todas las rutas protegidas requieren el siguiente encabezado:
+
+```
+x-api-key: <supersecretkey>
+```
+
+Esto se aplica a:
+
+- `/api/products/`
+- `/api/orders/`
+- `/api/inventory/check`
+
+###### 🧪 Prueba de Fallo
+
+1. Detener un microservicio (por ejemplo, `order_service`).
+2. Realizar una solicitud (por ejemplo, Añadir al carrito).
+3. Verás un mensaje como: `Pedido en cola. Esperando confirmación...`
+4. Iniciar `order_service` de nuevo:
+   ```bash
+   docker-compose up -d order_service
+   ```
+5. El cliente recibirá confirmación en tiempo real a través de WebSocket.
+
+#### 3.4 Estructura del proyecto
+
+```
+.
+├── api-gateway/                 # FastAPI Gateway (gRPC + WebSocket + queue fallback)
+├── ecommerce-app/              # Next.js Client (REST consumer)
+├── microservices/
+│   ├── product_service/
+│   ├── inventory_service/
+│   └── order_service/
+├── docker-compose.yml
+└── README.md
+```
+
+#### 3.5 Resultados y pantallazos
 
 ### 4. Descripción del ambiente de ejecución (Producción)
 
@@ -221,3 +269,7 @@ Aquí se describe cómo interactuar con el proyecto en el **frontend** una vez d
 ### Referencias
 
 A continuación se listan las referencias utilizadas para el desarrollo del proyecto, incluyendo documentación oficial, tutoriales, videos, artículos y fragmentos de código reutilizados:
+
+- [Cursor AI](https://www.cursor.com/)
+- [ChatGPT](https://chatgpt.com/)
+- Diapositivas de clase - Tópicos Especiales en Telemática ST0263.
