@@ -29,6 +29,6 @@ echo "All images built successfully!"
 
 # Deploy the stack
 echo "Deploying stack..."
-docker stack deploy -c docker-compose.yml ecommerce-app
+docker stack deploy -c docker-stack.yml ecommerce-app
 
 echo "Stack deployed successfully!" 

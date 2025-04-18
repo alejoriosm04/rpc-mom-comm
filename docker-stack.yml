@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   ecommerce-front:
-    image: rpc-mom-comm-ecommerce-front
+    image: ecommerce-front
     ports:
       - "3000:3000"
     deploy:
@@ -11,7 +11,7 @@ services:
         condition: on-failure
 
   api-gateway:
-    image: rpc-mom-comm-api-gateway
+    image: api-gateway
     ports:
       - "8000:8000"
     env_file:
@@ -22,7 +22,7 @@ services:
         condition: on-failure
 
   product_service:
-    image: rpc-mom-comm-product_service
+    image: product_service
     env_file:
       - ./microservices/product_service/.env
     deploy:
@@ -41,7 +41,7 @@ services:
         condition: on-failure
 
   inventory_service:
-    image: rpc-mom-comm-inventory_service
+    image: inventory_service
     env_file:
       - ./microservices/inventory_service/.env
     deploy:
@@ -50,7 +50,7 @@ services:
         condition: on-failure
 
   order_service:
-    image: rpc-mom-comm-order_service
+    image: order_service
     env_file:
       - ./microservices/order_service/.env
     deploy:
