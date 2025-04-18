@@ -71,7 +71,7 @@ El sistema está compuesto por una arquitectura de microservicios donde cada com
 - MongoDB (persistencia): Base de datos NoSQL utilizada para almacenar los datos de productos, inventarios y órdenes.
 - RabbitMQ (MOM): Utilizado para la gestión de solicitudes encoladas cuando un microservicio no está disponible.
 
-#### 2.2 Arquitectura ***
+#### 2.2 Arquitectura
 
 ![Diagrama de arquitectura](https://github.com/user-attachments/assets/9afcbdde-2c7a-4b37-b908-683bfa4eb92a)
 
