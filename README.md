@@ -186,8 +186,6 @@ This applies to:
    ```
 5. The client will receive real-time confirmation via WebSocket.
 
-Claro, aquí tienes **solo la sección nueva** que debes añadir al final del README para dejar constancia de cómo se hicieron las pruebas:
-
 ---
 
 ## 🧪 Manual Testing Summary
