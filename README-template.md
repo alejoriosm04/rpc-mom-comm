@@ -56,20 +56,20 @@ Esta arquitectura híbrida proporciona tanto la eficiencia de RPC como la robust
 
 ### 2. Información general
 
-#### 2.1 Diseño de alto nivel ***
+#### 2.1 Diseño de alto nivel 
 
-**Insertar Diagrama**
+![HLD](https://github.com/user-attachments/assets/33ec742f-d34f-42df-8f8a-ac37123c75bc)
 
-El sistema está compuesto por una arquitectura de microservicios donde cada componente cumple un rol específico. A través de un API Gateway se canalizan todas las peticiones REST del cliente, las cuales son traducidas a llamadas gRPC para comunicarse con los microservicios internos.
+El sistema está compuesto por una arquitectura de microservicios donde cada componente cumple un rol específico. A través de un API Gateway se canalizan todas las peticiones REST del cliente, las cuales son traducidas a llamadas gRPC para comunicarse con los microservicios internos. Además, se ha implementado un mecanismo de fallback utilizando RabbitMQ para manejar los fallos temporales de los microservicios.
 
 **Componentes:**
-- Cliente Web (Next.js)
-- API Gateway (FastAPI)
-- Microservicio de Productos
-- Microservicio de Inventario
-- Microservicio de Órdenes
-- MongoDB (persistencia)
-- RabbitMQ (MOM)
+- Cliente Web (Next.js): Interfaz de usuario construida con Next.js, donde los usuarios pueden interactuar con el sistema.
+- API Gateway (FastAPI): Punto de entrada principal para todas las solicitudes del cliente web. Proporciona un mecanismo de fallback utilizando RabbitMQ, en caso de que un microservicio no esté disponible.
+- Microservicio de Productos: Gestiona la información de los productos (nombre, descripción, precio, stock, etc.).
+- Microservicio de Inventario: Maneja la verificación y actualización del stock de productos.
+- Microservicio de Órdenes: Verifica la disponibilidad de inventario a través del Microservicio de Inventario.
+- MongoDB (persistencia): Base de datos NoSQL utilizada para almacenar los datos de productos, inventarios y órdenes.
+- RabbitMQ (MOM): Utilizado para la gestión de solicitudes encoladas cuando un microservicio no está disponible.
 
 #### 2.2 Arquitectura ***
 
