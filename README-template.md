@@ -119,12 +119,59 @@ El sistema está compuesto por una arquitectura de microservicios donde cada com
 
 #### 3.2 Cómo compilar y ejecutar el proyecto
 
+Clonar el repositorio en el equipo local.
+
+```bash
+git clone https://github.com/alejoriosm04/rpc-mom-comm.git
+```
+
 El proyecto puede ejecutarse directamente con Docker Compose o Docker Swarm.
 
 ##### Requisitos previos
 
 - Tener instalado Docker, Docker Compose y Docker Swarm.
 - El proyecto se puede ejecutar localmente o en un servidor remoto, tanto en un entorno Linux como en Windows.
+
+##### Configurar variables de entorno
+
+Para configurar las variables de entorno, se debe crear un archivo `.env` en la raíz de cada proyecto (ecommerce-app, api-gateway, microservices) y copiar el contenido del archivo `.env.example` en él.
+
+```bash
+cp .env.example .env
+cp .env.example .env.local # Únicamente para el proyecto ecommerce-app
+```
+
+Luego, reemplazar las variables comentadas con los valores actuales compartidos con el equipo.
+
+```bash
+nano .env
+```
+
+> Ctrl + X, Y, Enter para guardar y salir.
+
+**Nota:** La variable de entorno `NEXT_PUBLIC_API_KEY` y `NEXT_PUBLIC_WS_URL` en el proyecto *ecommerce-app*, deben ser reemplazadas por:
+
+- `localhost` si se ejecuta el proyecto localmente.
+
+    ```bash
+    NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
+    ```
+
+- `<IP-ADDRESS>` si se ejecuta el proyecto en un servidor remoto.
+
+    ```bash
+    NEXT_PUBLIC_API_URL=http://<IP-ADDRESS>:8000/api
+    NEXT_PUBLIC_WS_URL=ws://<IP-ADDRESS>:8000/ws
+    ```
+
+    Así mismo, deberá agregar el IP-ADDRESS a la lista de permitidos en el archivo `app.py` de la API Gateway.
+
+    ```python
+    allow_origins=["http://localhost:3000", "http://<IP-ADDRESS>:3000"]
+    ```
+
+    > ⚠️ **Nota:** En nuestro caso, el IP-ADDRESS es `34.238.228.250`.
 
 ##### Despliegue completo del sistema
 

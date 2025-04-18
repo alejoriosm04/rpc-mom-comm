@@ -77,15 +77,6 @@ This document provides step-by-step instructions for deploying the project on a 
 
 ## Environment Configuration
 
-1. Create and configure environment files:
-   ```bash
-   # For each project folder (ecommerce-app, api-gateway, microservices)
-   touch .env
-   nano .env
-   ```
-   
-   Note: Use Ctrl+X, then Y, then Enter to save and exit the nano editor.
-
 ## Deployment
 
 1. Clone the repository:
@@ -94,15 +85,57 @@ This document provides step-by-step instructions for deploying the project on a 
    cd rpc-mom-comm
    ```
 
-2. Start the services using Docker Compose:
+### Set environment variables
+
+On each project folder, create a .env file and set the environment variables as described in the .env.example file. Execute the following command for each project folder (ecommerce-app, api-gateway, microservices):
+
+```bash
+cp .env.example .env
+cp .env.example .env.local # Only for the ecommerce-app project
+```
+
+Then, replace the commented variables with the actual values shared with the team.
+
+```bash
+nano .env
+```
+
+> Ctrl + X, Y, Enter to save and exit.
+
+**Note:** The environment variables for the ecommerce-app project must be replaced by:
+
+   ```bash
+   NEXT_PUBLIC_API_URL=http://<IP-ADDRESS>:8000/api
+   NEXT_PUBLIC_WS_URL=ws://<IP-ADDRESS>:8000/ws
+   ```
+
+   Also, the IP-ADDRESS must be added to the allowed list in the `app.py` file of the API Gateway.
+
+   ```python
+   allow_origins=["http://localhost:3000", "http://<IP-ADDRESS>:3000"]
+   ```
+> On our case, we set an **Elastic IP ADDRESS** in AWS. Avoiding to do this process every time we want to deploy the project.
+
+### Deploying the project
+
+1. Execute the following command to deploy the project if you do not want a high availability deployment:
    ```bash
    sudo docker-compose up -d --build
+   ```
+
+2. Execute the following commands to deploy the project if you want a high availability deployment:
+   ```bash
+   docker swarm init
+   ./deploy.sh   # to deploy the project
+   docker service ls   # to verify that the services have been created
+   docker stack rm ecommerce-app   # to delete the services
    ```
 
 ## Service Ports
 
 The following services will be available after deployment:
 - Frontend: Port 3000
+- API Gateway: Port 8000
 - RabbitMQ AMQP: Port 5672
 - RabbitMQ Management Interface: Port 15672
 
@@ -129,16 +162,3 @@ If you encounter any issues:
    ```bash
    systemctl status docker
    ```
-
-## Maintenance
-
-To stop the services:
-```bash
-sudo docker-compose down
-```
-
-To update the deployment:
-```bash
-git pull
-sudo docker-compose up -d --build
-``` 
