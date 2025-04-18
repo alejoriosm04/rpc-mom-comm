@@ -12,8 +12,8 @@ This document provides step-by-step instructions for deploying the project on a 
 
 1. Launch an EC2 instance with the following specifications:
    - Operating System: Ubuntu 24.04 LTS
-   - Instance Type: t2.micro
-   - Storage: 1x 8GiB gp2 volume
+   - Instance Type: t2.small
+   - Storage: 1x 8GiB gp3 volume
    - Network Settings:
      - Enable HTTPS and HTTP access
      - Configure security group as described below
@@ -34,11 +34,27 @@ This document provides step-by-step instructions for deploying the project on a 
      - Source: 0.0.0.0/0
    - Rule 2:
      - Type: Custom TCP
-     - Port: 5672
+     - Port: 8000
      - Source: 0.0.0.0/0
    - Rule 3:
      - Type: Custom TCP
+     - Port: 5672
+     - Source: 0.0.0.0/0
+   - Rule 4:
+     - Type: Custom TCP
      - Port: 15672
+     - Source: 0.0.0.0/0
+   - Rule 5:
+     - Type: Custom TCP
+     - Port: 50051
+     - Source: 0.0.0.0/0
+   - Rule 6:
+     - Type: Custom TCP
+     - Port: 50052
+     - Source: 0.0.0.0/0
+   - Rule 7:
+     - Type: Custom TCP
+     - Port: 50053
      - Source: 0.0.0.0/0
 
 ![image](https://github.com/user-attachments/assets/8ebe8552-f429-4bdd-81ca-d78ea0bbbc3b)
@@ -52,6 +68,11 @@ This document provides step-by-step instructions for deploying the project on a 
    sudo apt install docker-compose -y
    sudo systemctl enable docker
    sudo systemctl start docker
+   ```
+
+   Then, add the current user to the docker group to allow running docker without sudo:
+   ```bash
+   sudo usermod -aG docker ubuntu
    ```
 
 ## Environment Configuration
