@@ -28,5 +28,5 @@ export const productService = {
       console.error('Error fetching products:', error);
       throw error;
     }
-  }
+  },
 };

@@ -1,4 +1,3 @@
-# api-gateway/methods/product.py
 import logging
 import grpc.aio
 from config.grpc import get_product_stub
@@ -19,12 +18,16 @@ async def get_products_grpc_fallback(client_id: str = None):
         if e.code() == StatusCode.UNAVAILABLE:
             logger.warning("Product microservice unavailable. Enqueuing request.")
             await enqueue_product_request({"operation": "get_products", "client_id": client_id})
-        return []  # Return empty list in the meantime
+        return []
 
     products_list = []
     for product in response.products:
+        if not product.id:
+            logger.warning(f"Producto sin ID recibido: {product}")
+            continue
+
         products_list.append({
-            "id": product.id,
+            "id": str(product.id),  
             "title": product.title,
             "price": product.price,
             "description": product.description,
