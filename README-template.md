@@ -44,15 +44,11 @@ Esta arquitectura híbrida proporciona tanto la eficiencia de RPC como la robust
 | RNF02  | Escalabilidad horizontal               | El sistema deberá poder escalar horizontalmente, permitiendo múltiples instancias de microservicios para atender mayor carga. Los microservicios deben ejecutarse como contenedores y la infraestructura debe soportar balanceo de carga. |
 | RNF03  | Seguridad de la comunicación y acceso  | El sistema deberá contar con mecanismos de autenticación y autorización, además de cifrado en las comunicaciones. Las API deben tener autenticación por token y el acceso debe estar controlado por roles. |
 | RNF04  | Mantenibilidad del código y despliegue | El sistema deberá tener código modular, documentado y con capacidad de despliegue automatizado mediante Docker.                                     |
+| RNF05  | Monitoreo, logging y testing continuo  | El sistema deberá proporcionar métricas, logs y alertas que permitan su monitoreo y diagnóstico continuo. Además, deberá incorporar pruebas automáticas (unitarias) como parte del flujo de desarrollo. |
 
 #### 1.2. Que aspectos NO cumplió o desarrolló de la actividad propuesta por el profesor (requerimientos funcionales y no funcionales)
 
-##### 🔧 Requerimientos No Funcionales
-
-| Código | Título                                 | Descripción                                                                                                                                         |
-|--------|----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| RNF05  | Monitoreo, logging y testing continuo  | El sistema deberá proporcionar métricas, logs y alertas que permitan su monitoreo y diagnóstico continuo. Además, deberá incorporar pruebas automáticas (unitarias) como parte del flujo de desarrollo. |
-
+Se cumplió con todos los requerimientos funcionales y no funcionales propuestos.
 
 ### 2. Información general
 
@@ -116,6 +112,7 @@ El sistema está compuesto por una arquitectura de microservicios donde cada com
 | Middleware (MOM)     | RabbitMQ           | 4.x (Management UI)   |
 | Orquestación         | Docker Swarm       | Docker 24.0.5         |
 | Contenedores         | Docker Engine      | 24.0.5                |
+| Monitoreo            | Loki, Promtail, Grafana | 2.9.2, 2.9.2, latest |
 
 #### 3.2 Cómo compilar y ejecutar el proyecto
 
@@ -236,17 +233,142 @@ Esto se aplica a:
 
 ```
 .
+├── analytics/
+│   ├── grafana/
+│   └── promtail/
 ├── api-gateway/                 # FastAPI Gateway (gRPC + WebSocket + queue fallback)
 ├── ecommerce-app/              # Next.js Client (REST consumer)
 ├── microservices/
 │   ├── product_service/
 │   ├── inventory_service/
 │   └── order_service/
+├── deploy.sh
 ├── docker-compose.yml
+├── docker-stack.yml
 └── README.md
 ```
+#### 3.5 Descripción de los componentes
 
-#### 3.5 Resultados y pantallazos
+##### Cliente Web (ecommerce-app)
+
+Implementado en Next.js, proporciona una interfaz moderna y reactiva.
+
+- Visualización y búsqueda de productos.
+- Gestión del carrito de compras.
+- Proceso de checkout y creación de órdenes.
+- Visualización del estado de órdenes en tiempo real.
+- Actualizaciones automáticas de stock mediante WebSockets.
+
+Características técnicas:
+- Consume APIs REST del Gateway.
+- Mantiene conexión WebSocket para actualizaciones en tiempo real.
+- Implementa autenticación mediante API key.
+- Diseño responsivo para diferentes dispositivos.
+
+##### API Gateway
+
+Implementado en FastAPI, actúa como el punto central de entrada.
+
+- Traducción de peticiones REST a llamadas gRPC.
+- Manejo de autenticación y autorización.
+- Implementación de mecanismo de fallback.
+- Gestión de WebSockets para actualizaciones en tiempo real.
+
+Características técnicas:
+- Validación de API keys.
+- Manejo de CORS.
+- Implementación de circuit breaker para fallos.
+- Enrutamiento inteligente de peticiones.
+
+##### Microservicio de Productos
+
+Implementado en Python, gestiona el catálogo de productos.
+
+- CRUD completo de productos
+- Búsqueda y filtrado de productos
+- Gestión de categorías
+- Validación de datos de productos
+
+Características técnicas:
+- Almacenamiento en MongoDB.
+- Exposición de servicios vía gRPC.
+- Implementación de caché para consultas frecuentes.
+- Validación de esquemas de datos.
+
+##### Microservicio de Inventario
+
+Implementado en Python, gestiona el stock de productos.
+
+- Control de niveles de stock.
+- Verificación de disponibilidad.
+- Actualización de inventario.
+- Historial de movimientos de stock.
+
+Características técnicas:
+- Transacciones atómicas para actualizaciones.
+- Notificaciones de cambios de stock.
+- Integración con el servicio de órdenes.
+- Manejo de reservas de stock.
+
+##### Microservicio de Órdenes
+
+Implementado en Python, procesa las órdenes de compra.
+
+- Creación y gestión de órdenes.
+- Verificación de disponibilidad de stock.
+- Procesamiento de pagos.
+- Notificación de estados de órdenes.
+
+Características técnicas:
+  - Transacciones distribuidas.
+  - Manejo de estados de órdenes.
+  - Integración con servicios de inventario.
+  - Sistema de reintentos para fallos.
+
+##### MongoDB
+
+Base de datos NoSQL principal del sistema.
+
+- Almacenamiento persistente de datos.
+- Replicación para alta disponibilidad.
+- Indexación para búsquedas eficientes.
+- Transacciones ACID.
+- Esquemas flexibles.
+- Agregaciones complejas.
+- Replicación de datos.
+- Backup automático.
+
+##### RabbitMQ
+
+Sistema de mensajería para fallback y comunicación asíncrona.
+
+- Colas de mensajes para fallback.
+- Publicación/suscripción para eventos.
+- Persistencia de mensajes.
+- Reintentos automáticos.
+
+Características técnicas:
+- Exchange de mensajes.
+- Colas durables.
+- Confirmaciones de entrega.
+- Dead letter queues.
+
+##### Sistema de Monitoreo
+
+Implementado con Loki, Promtail y Grafana.
+
+- Recolección centralizada de logs.
+- Visualización de métricas en tiempo real.
+- Alertas automáticas.
+- Dashboards personalizados.
+
+Características técnicas:
+- Agregación de logs.
+- Análisis de patrones.
+- Visualización de métricas.
+- Configuración de alertas.
+
+#### 3.6 Resultados y pantallazos ***
 
 ### 4. Descripción del ambiente de ejecución (Producción)
 
@@ -259,6 +381,7 @@ Para más información sobre el despliegue en producción en una instancia **EC2
 - Acceso frontend: `http://<TU_IP_PUBLICA>:3000`
 - Acceso API Gateway: `http://<TU_IP_PUBLICA>:8000/docs`
 - Acceso RabbitMQ: `http://<TU_IP_PUBLICA>:15672`
+- Accesso Logs Grafana: `http://<TU_IP_PUBLICA>:3001`
 
 > ⚠️ Recuerda abrir los puertos en el grupo de seguridad o firewall si usas AWS, GCP o VPS.
 
@@ -270,6 +393,11 @@ Aquí se describe cómo interactuar con el proyecto en el **frontend** una vez d
 
 A continuación se listan las referencias utilizadas para el desarrollo del proyecto, incluyendo documentación oficial, tutoriales, videos, artículos y fragmentos de código reutilizados:
 
-- [Cursor AI](https://www.cursor.com/)
-- [ChatGPT](https://chatgpt.com/)
-- Diapositivas de clase - Tópicos Especiales en Telemática ST0263.
+- 🔗 [mega-grpc – flop-code](https://github.com/flop-code/mega-grpc): Arquitectura completa con gRPC, múltiples microservicios y herramientas de monitoreo.
+- 🔗 [fastapi-grpc-sample – odh1995](https://github.com/odh1995/fastapi-grpc-sample): Ejemplo de integración entre FastAPI y gRPC usando proto.
+- 🔗 [api-gateway-grpc-microservice – hemicharly](https://github.com/hemicharly/api-gateway-grpc-microservice): Implementación de microservicios con API Gateway usando gRPC.
+- 📹 [Video explicativo sobre gRPC y microservicios (YouTube)](https://www.youtube.com/watch?v=p23J6NTDhEk): Introducción clara sobre cómo funciona gRPC con ejemplos visuales.
+- 📘 [FastAPI Websockets (Documentación oficial)](https://fastapi.tiangolo.com/advanced/websockets/): Guía avanzada para implementar WebSockets con FastAPI.
+- 🛠️ [Cursor AI](https://www.cursor.com/): Plataforma de desarrollo asistido con IA, ideal para trabajo colaborativo y debugging.
+- 🤖 [ChatGPT](https://chatgpt.com/): Asistente conversacional utilizado para ideación, redacción y soporte técnico en este proyecto.
+- 📊 Diapositivas de clase - *Tópicos Especiales en Telemática ST0263*: Material académico de referencia utilizado durante el desarrollo del proyecto.

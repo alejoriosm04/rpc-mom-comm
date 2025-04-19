@@ -56,6 +56,10 @@ This document provides step-by-step instructions for deploying the project on a 
      - Type: Custom TCP
      - Port: 50053
      - Source: 0.0.0.0/0
+   - Rule 8:
+     - Type: Custom TCP
+     - Port: 3001
+     - Source: 0.0.0.0/0
 
 ![image](https://github.com/user-attachments/assets/8ebe8552-f429-4bdd-81ca-d78ea0bbbc3b)
 
@@ -138,6 +142,7 @@ The following services will be available after deployment:
 - API Gateway: Port 8000
 - RabbitMQ AMQP: Port 5672
 - RabbitMQ Management Interface: Port 15672
+- Grafana Logs: Port 3001
 
 ## Verification
 
