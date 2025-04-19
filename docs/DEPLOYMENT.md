@@ -144,6 +144,18 @@ The following services will be available after deployment:
 - RabbitMQ Management Interface: Port 15672
 - Grafana Logs: Port 3001
 
+### Access Grafana Logs
+
+1. Access the Grafana Logs service at `http://<instance-public-ip>:3001`
+2. Login with the following credentials:
+   - Username: admin
+   - Password: admin
+3. Create a new Data Source with Loki as the type.
+   - Name: Loki
+   - URL: http://loki:3100
+4. Go to Dashboards -> Docker Logs folder.
+5. Click on the dashboard `Dashboard de Logs y Metricas Docker` to open it.
+
 ## Verification
 
 To verify the deployment:
