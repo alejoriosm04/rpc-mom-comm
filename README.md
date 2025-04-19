@@ -10,6 +10,33 @@
 
 - Edwin Nelson Montoya Munera - emontoya@eafit.edu.co
 
+### Índice
+
+1. [Descripción del proyecto](#1-descripción-del-proyecto)
+   - [1.1 Requerimientos funcionales y no funcionales](#11-que-aspectos-cumplió-o-desarrolló-de-la-actividad-propuesta-por-el-profesor-requerimientos-funcionales-y-no-funcionales)
+   - [1.2 Aspectos no desarrollados](#12-que-aspectos-no-cumplió-o-desarrolló-de-la-actividad-propuesta-por-el-profesor-requerimientos-funcionales-y-no-funcionales)
+
+2. [Información general](#2-información-general)
+   - [2.1 Diseño de alto nivel](#21-diseño-de-alto-nivel)
+   - [2.2 Arquitectura](#22-arquitectura)
+   - [2.3 Patrones de diseño](#23-patrones-de-diseño)
+   - [2.4 Buenas prácticas utilizadas](#24-buenas-prácticas-utilizadas)
+
+3. [Ambiente de desarrollo y técnico](#3-descripción-del-ambiente-de-desarrollo-y-técnico)
+   - [3.1 Lenguajes y tecnologías principales](#31-lenguajes-y-tecnologías-principales)
+   - [3.2 Compilación y ejecución](#32-cómo-compilar-y-ejecutar-el-proyecto)
+   - [3.3 Detalles del desarrollo](#33-detalles-del-desarrollo)
+   - [3.4 Estructura del proyecto](#34-estructura-del-proyecto)
+   - [3.5 Descripción de los componentes](#35-descripción-de-los-componentes)
+   - [3.6 Resultados y pantallazos](#36-resultados-y-pantallazos)
+
+4. [Ambiente de ejecución (Producción)](#4-descripción-del-ambiente-de-ejecución-producción)
+   - [4.1 Despliegue](#41-despliegue)
+   - [4.2 IP o nombre de dominio del servidor](#42-ip-o-nombre-de-dominio-del-servidor)
+   - [4.3 Mini guía para el usuario final](#43-mini-guía-para-el-usuario-final)
+
+5. [Referencias](#referencias)
+
 ## RPC communication system with MOM failure system
 
 ### 1. Descripción del proyecto
@@ -374,7 +401,7 @@ Características técnicas:
 
 #### 4.1 Despliegue
 
-Para más información sobre el despliegue en producción en una instancia **EC2 de AWS**, ver el archivo [DEPLOYMENT.md](insertar-link-despues). Aquí se describe paso a paso el despliegue del proyecto en una instancia EC2 de AWS.
+Para más información sobre el despliegue en producción en una instancia **EC2 de AWS**, ver el archivo [DEPLOYMENT.md](https://github.com/alejoriosm04/rpc-mom-comm/blob/main/docs/DEPLOYMENT.md). Aquí se describe paso a paso el despliegue del proyecto en una instancia EC2 de AWS.
 
 #### 4.2 IP o nombre de dominio del servidor
 
