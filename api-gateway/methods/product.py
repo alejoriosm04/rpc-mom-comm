@@ -16,18 +16,18 @@ async def get_products_grpc_fallback(client_id: str = None):
     except grpc.aio.AioRpcError as e:
         logger.error(f"gRPC error: {e}")
         if e.code() == StatusCode.UNAVAILABLE:
-            logger.warning("Product microservice unavailable. Enqueuing request.")
+            logger.warning("Product microservice is unavailable. Enqueuing request.")
             await enqueue_product_request({"operation": "get_products", "client_id": client_id})
         return []
 
     products_list = []
     for product in response.products:
         if not product.id:
-            logger.warning(f"Producto sin ID recibido: {product}")
+            logger.warning(f"Product received without ID: {product}")
             continue
 
         products_list.append({
-            "id": str(product.id),  
+            "id": str(product.id),
             "title": product.title,
             "price": product.price,
             "description": product.description,

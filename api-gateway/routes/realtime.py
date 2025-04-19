@@ -15,13 +15,17 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     except WebSocketDisconnect:
         connected_clients.pop(client_id, None)
 
-@router.post("/push/products")
-async def push_products(data: dict):
-    ws = connected_clients.get(data.get("client_id"))
-    if ws:
-        await ws.send_json({"products": data.get("products")})
-        return JSONResponse({"status": "ok"})
-    return JSONResponse({"error": "client not connected"}, status_code=404)
+@app.post("/push/products")
+async def push_products(payload: dict):
+    products   = payload.get("products", [])
+    broadcast  = payload.get("broadcast", False)
+    client_id  = payload.get("client_id")
+
+    if broadcast:
+        await websocket_manager.broadcast_to_all({"products": products})
+    elif client_id:
+        await websocket_manager.send_to(client_id, {"products": products})
+    return {"ok": True}
 
 @router.post("/push/orders")
 async def push_order_status(data: dict):

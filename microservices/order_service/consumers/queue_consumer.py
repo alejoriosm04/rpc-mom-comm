@@ -25,7 +25,7 @@ async def get_updated_products():
     try:
         async with grpc.aio.insecure_channel(f"{PRODUCT_SERVER_HOST}:{PRODUCT_SERVER_PORT}") as channel:
             stub = product_pb2_grpc.ProductServiceStub(channel)
-            response = await stub.GetProducts(product_pb2.ProductRequest())  # Ajusta si usas otro request
+            response = await stub.GetProducts(product_pb2.ProductRequest()) 
             products = [
                 {
                     "id": product.id,
@@ -45,7 +45,7 @@ async def get_updated_products():
             ]
             return products
     except Exception as e:
-        logger.warning(f"⚠️ Failed to fetch updated products: {e}")
+        logger.warning(f"Failed to fetch updated products: {e}")
         return []
 
 
@@ -55,7 +55,7 @@ async def process_message(message):
             data = json.loads(message.body)
 
             if data.get("operation") == "create_order":
-                logger.info("📦 Processing order from queue...")
+                logger.info("Processing order from queue...")
 
                 product_id = int(data.get("product_id"))
                 quantity = int(data.get("quantity"))
@@ -71,7 +71,6 @@ async def process_message(message):
                 response = await service.CreateOrder(request, context=None)
 
                 async with aiohttp.ClientSession() as session:
-                    # Notificar estado de orden
                     await session.post(
                         f"{API_GATEWAY_URL}/push/orders",
                         json={
@@ -85,7 +84,7 @@ async def process_message(message):
                     logger.info("📨 Order status pushed to gateway.")
 
                     if response.success:
-                        logger.info("✅ Order processed, fetching updated products...")
+                        logger.info("Order processed, fetching updated products...")
                         updated_products = await get_updated_products()
 
                         await session.post(
@@ -98,7 +97,7 @@ async def process_message(message):
                         logger.info("✅ Updated products pushed to client.")
 
         except Exception as e:
-            logger.error(f"🔥 Error processing RabbitMQ message: {str(e)}")
+            logger.error(f"Error processing RabbitMQ message: {str(e)}")
 
 
 async def start_consumer():
