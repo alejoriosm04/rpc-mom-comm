@@ -5,7 +5,7 @@ from datetime import datetime
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config.database import inventory_collection
+from inventory_service.config.database import inventory_collection
 
 async def seed_inventory():
     await inventory_collection.delete_many({})  

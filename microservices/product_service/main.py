@@ -6,7 +6,7 @@ import asyncio
 from concurrent import futures
 from pb import product_pb2_grpc
 from config.grpc import ProductServiceServicer
-from consumers.queue_consumer import start_consumer  # <- Nuevo
+from consumers.queue_consumer import start_consumer  
 
 load_dotenv()
 grpc_port = os.getenv("GRPC_SERVER_PORT")
@@ -18,7 +18,6 @@ async def serve():
     await server.start()
     print(f"ProductService running on port {grpc_port}")
 
-    # Iniciar consumidor RabbitMQ en paralelo
     await asyncio.gather(server.wait_for_termination(), start_consumer())
 
 if __name__ == '__main__':

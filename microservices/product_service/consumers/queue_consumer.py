@@ -4,8 +4,8 @@ import aiohttp
 import os
 from dotenv import load_dotenv
 from aio_pika import connect_robust
-from config.database import products_collection
-from config.inventory_grpc_client import get_inventory_stub
+from product_service.config.database import products_collection
+from product_service.config.inventory_grpc_client import get_inventory_stub
 from pb import inventory_pb2
 import asyncio
 

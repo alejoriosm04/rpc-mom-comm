@@ -1,0 +1,35 @@
+name: Test Inventory Service
+
+on:
+  push:
+    paths:
+      - 'microservices/inventory_service/**'
+  pull_request:
+    paths:
+      - 'microservices/inventory_service/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: microservices/inventory_service
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=inventory_service --cov-report=term-missing -v

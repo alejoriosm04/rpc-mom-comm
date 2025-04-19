@@ -5,6 +5,7 @@ import grpc
 import os
 from dotenv import load_dotenv
 import asyncio
+from methods.order import check_inventory, save_order, reduce_stock
 
 load_dotenv()
 grpc_port = os.getenv("GRPC_SERVER_PORT", "50053")

@@ -17,7 +17,7 @@ async def serve():
     inventory_pb2_grpc.add_InventoryServiceServicer_to_server(InventoryServiceServicer(), server)
     server.add_insecure_port(f'[::]:{grpc_port}')
     await server.start()
-    print(f"✅ InventoryService running on port {grpc_port}")
+    print(f"InventoryService running on port {grpc_port}")
 
     await asyncio.gather(
         server.wait_for_termination(),

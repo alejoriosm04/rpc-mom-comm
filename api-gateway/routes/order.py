@@ -5,6 +5,7 @@ from config.limiter import limiter
 from models.order import OrderRequest, OrderResponse
 from methods.order import create_order_grpc
 from auth.auth import validate_api_key
+from methods.queue import enqueue_order_request
 
 router = APIRouter(prefix="/api/orders", tags=["Orders"])
 

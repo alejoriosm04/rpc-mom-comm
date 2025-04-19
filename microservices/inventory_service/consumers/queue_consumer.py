@@ -6,7 +6,7 @@ import asyncio
 import os
 from aio_pika import connect_robust
 from dotenv import load_dotenv
-from config.database import inventory_collection
+from inventory_service.config.database import inventory_collection
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)

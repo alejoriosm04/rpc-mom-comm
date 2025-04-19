@@ -81,7 +81,7 @@ async def process_message(message):
                             "message": "Your order has been confirmed." if response.success else "Order rejected."
                         }
                     )
-                    logger.info("📨 Order status pushed to gateway.")
+                    logger.info("Order status pushed to gateway.")
 
                     if response.success:
                         logger.info("Order processed, fetching updated products...")
@@ -94,7 +94,7 @@ async def process_message(message):
                                 "products": updated_products
                             }
                         )
-                        logger.info("✅ Updated products pushed to client.")
+                        logger.info("Updated products pushed to client.")
 
         except Exception as e:
             logger.error(f"Error processing RabbitMQ message: {str(e)}")

@@ -77,7 +77,7 @@ export const ProductCard = ({ product, clientId, onOrderSuccess }: Props) => {
           max={product.stock}
           value={qty}
           onChange={(e) => setQty(Number(e.target.value))}
-          className="w-20 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+          className="w-20 px-3 py-2 border rounded-lg font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
         />
         <button
           disabled={loading || outOfStock}
