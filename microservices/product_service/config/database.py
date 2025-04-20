@@ -10,5 +10,4 @@ DATABASE_NAME = os.getenv("DATABASE_NAME", "product_db")
 client = AsyncIOMotorClient(MONGODB_URL)
 database = client[DATABASE_NAME]
 
-# Collections
 products_collection = database.products

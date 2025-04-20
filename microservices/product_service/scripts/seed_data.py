@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from config.database import products_collection
+from product_service.config.database import products_collection
 from models.product import Product, Category
 from datetime import datetime
 

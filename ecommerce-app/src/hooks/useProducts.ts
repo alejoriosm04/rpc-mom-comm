@@ -1,106 +1,115 @@
-import { useState, useEffect } from 'react';
-import { Product } from '../types/product';
-import { productService } from '../services/productService';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { Product } from '@/types/product';
+import { productService } from '@/services/productService';
+
+const RETRY_INTERVAL_MS = 5000;
 
 export const useProducts = (initialPage: number = 1, initialLimit: number = 12) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(initialPage);
-  const [total, setTotal] = useState(0);
-  const [clientId, setClientId] = useState<string | null>(null);
-  const wsBaseUrl = process.env.NEXT_PUBLIC_WS_URL;
+  const [page, setPage] = useState<number>(initialPage);
+  const [total, setTotal] = useState<number>(0);
+  const [clientId, setClientId] = useState<string>('');
+
+  const wsBaseUrl = process.env.NEXT_PUBLIC_WS_URL!;
+  const socketRef = useRef<WebSocket | null>(null);
+  const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
+  const retryTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      let cid = localStorage.getItem("client_id");
-      if (!cid) {
-        cid = uuidv4();
-        localStorage.setItem("client_id", cid);
-      }
-      setClientId(cid);
+    if (typeof window === 'undefined') return;
+    let cid = localStorage.getItem('client_id');
+    if (!cid) {
+      cid = uuidv4();
+      localStorage.setItem('client_id', cid);
     }
+    setClientId(cid);
   }, []);
 
-  // ✅ WebSocket connection
-  useEffect(() => {
+  const fetchProducts = useCallback(async () => {
     if (!clientId) return;
-
-    const socket = new WebSocket(`${wsBaseUrl}/${clientId}`);
-
-    socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-
-        // ✅ Si llegan productos en tiempo real
-        if (data.products) {
-          const productsWithUniqueIds = data.products.map((product: Product, index: number) => ({
-            ...product,
-            id: product.id ? `${product.id}-${clientId}` : `temp-${index}`
-          }));
-          setProducts(productsWithUniqueIds);
-          setTotal(data.products.length);
-          setLoading(false);
-          setError(null);
-        }
-
-        // ✅ Si llega estado de orden
-        if (data.type === 'order_status') {
-          const { product_id, status, message, quantity } = data;
-
-          // 🔄 Actualiza el stock localmente si la orden fue confirmada
-          if (status === 'confirmed') {
-            setProducts(prev =>
-              prev.map(p => {
-                const cleanId = p.id.toString().split('-')[0];
-                if (cleanId === product_id.toString()) {
-                  return { ...p, stock: Math.max(0, p.stock - quantity) };
-                }
-                return p;
-              })
-            );
-          }
-
-          // ✅ Mostrar alerta simple (puedes cambiar por toast)
-          alert(`${message} (Status: ${status})`);
-        }
-
-      } catch (err) {
-        console.error("WebSocket parsing error:", err);
-      }
-    };
-
-    return () => socket.close();
-  }, [clientId, wsBaseUrl]);
-
-  // ✅ Carga inicial de productos
-  useEffect(() => {
-    if (!clientId) return;
-
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await productService.getProducts(page, initialLimit, clientId);
-        setProducts(response.products);
-        setTotal(response.total);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch products');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
+    try {
+      setLoading(true);
+      const resp = await productService.getProducts(page, initialLimit, clientId);
+      setProducts(resp.products.map((p) => ({ ...p, id: `${p.id}-${clientId}` })));
+      setTotal(resp.total);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error fetching products');
+    } finally {
+      setLoading(false);
+    }
   }, [page, initialLimit, clientId]);
 
-  return {
-    products,
-    loading,
-    error,
-    page,
-    total,
-    setPage,
-  };
+  useEffect(() => { if (clientId) fetchProducts(); }, [clientId, fetchProducts]);
+
+  useEffect(() => {
+    if (!clientId) return;
+
+    if (retryTimer.current) clearInterval(retryTimer.current);
+
+    if (error || (!loading && products.length === 0)) {
+      retryTimer.current = setInterval(fetchProducts, RETRY_INTERVAL_MS);
+    }
+
+    return () => { if (retryTimer.current) clearInterval(retryTimer.current); };
+  }, [error, products.length, loading, clientId, fetchProducts]);
+
+  useEffect(() => {
+    if (!clientId) return;
+
+    const connect = () => {
+      const socket = new WebSocket(`${wsBaseUrl}/${clientId}`);
+      socketRef.current = socket;
+
+      socket.onopen = () => console.log('[WS] Connected ✅');
+
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          if (Array.isArray(data.products)) {
+            setProducts(data.products.map((p: Product) => ({ ...p, id: `${p.id}-${clientId}` })));
+            setTotal(data.products.length);
+            setError(null);
+            setLoading(false);
+            return;
+          }
+
+          if (data.type === 'order_status' && data.status === 'confirmed') {
+            const { product_id, quantity } = data;
+            setProducts((prev) =>
+              prev.map((p) => (p.id.split('-')[0] === String(product_id) ? { ...p, stock: Math.max(0, p.stock - quantity) } : p))
+            );
+          }
+        } catch (err) {
+          console.error('[WS] Parse error', err);
+        }
+      };
+
+      socket.onerror = (err) => {
+        console.error('[WS] Error', err);
+        socket.close();
+      };
+
+      socket.onclose = () => {
+        console.warn('[WS] Closed – retrying…');
+        reconnectTimeout.current = setTimeout(connect, 2000);
+      };
+    };
+
+    connect();
+    return () => {
+      if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
+      socketRef.current?.close();
+    };
+  }, [clientId, wsBaseUrl]);
+
+  const onOrderSuccess = useCallback((localId: string, qty: number) => {
+    setProducts((prev) => prev.map((p) => (p.id === localId ? { ...p, stock: Math.max(0, p.stock - qty) } : p)));
+  }, []);
+
+  return { products, loading, error, page, total, setPage, clientId, onOrderSuccess, refreshProducts: fetchProducts };
 };

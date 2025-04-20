@@ -20,7 +20,7 @@ async def process_message(message):
     async with message.process():
         try:
             data = json.loads(message.body)
-            logger.info(f"📥 Received failover message: {data}")
+            logger.info(f"Received failover message: {data}")
 
             if data.get("operation") == "check_inventory":
                 product_id = data.get("product_id")
@@ -40,11 +40,11 @@ async def start_inventory_consumer():
             channel = await connection.channel()
             queue = await channel.declare_queue(QUEUE_NAME, durable=True)
             await queue.consume(process_message)
-            logger.info("✅ Connected and listening for inventory failover messages.")
-            await asyncio.Future()  # Mantenerlo vivo
+            logger.info("Connected and listening for inventory failover messages.")
+            await asyncio.Future()  
             break
         except Exception as e:
-            logger.warning(f"⏳ Retry {attempt} failed: {str(e)}")
+            logger.warning(f"Retry {attempt} failed: {str(e)}")
             if attempt == max_retries:
-                logger.error("🚫 Could not connect after multiple attempts.")
+                logger.error("Could not connect after multiple attempts.")
             await asyncio.sleep(retry_delay)

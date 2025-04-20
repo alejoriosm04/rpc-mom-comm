@@ -6,20 +6,20 @@ export interface Category {
 }
 
 export interface Product {
-  id: string;
+  _id: string;           
+  id: string;         
   title: string;
   slug: string;
   price: number;
   description: string;
   category: Category;
   images: string[];
-  stock: number; 
+  stock: number;
 }
-
 
 export interface ProductsResponse {
   products: Product[];
   total: number;
   page: number;
   limit: number;
-} 
+}

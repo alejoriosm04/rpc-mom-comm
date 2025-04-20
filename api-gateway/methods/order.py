@@ -16,7 +16,7 @@ async def create_order_grpc(product_id: int, quantity: int, client_id: str):
             client_id=client_id
         )
         response = await stub.CreateOrder(request)
-        logger.info("✅ gRPC call to CreateOrder succeeded.")
+        logger.info("gRPC call to CreateOrder succeeded.")
         return {
             "success": response.success,
             "message": response.message,
@@ -24,7 +24,7 @@ async def create_order_grpc(product_id: int, quantity: int, client_id: str):
         }
 
     except grpc.aio.AioRpcError as e:
-        logger.error(f"❌ gRPC call to CreateOrder failed: {e}")
+        logger.error(f"gRPC call to CreateOrder failed: {e}")
         if e.code() == StatusCode.UNAVAILABLE:
             logger.warning("⚠️ Order microservice is unavailable. Sending request to RabbitMQ queue.")
             await enqueue_order_request({

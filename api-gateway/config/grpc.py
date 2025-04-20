@@ -8,7 +8,6 @@ from pb import order_pb2_grpc
 
 load_dotenv()
 
-# Product microservice stub
 def get_product_stub():
     host = os.getenv("PRODUCT_SERVER_HOST", "localhost")
     port = os.getenv("PRODUCT_SERVER_PORT", "50051")

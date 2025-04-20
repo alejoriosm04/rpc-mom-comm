@@ -12,6 +12,6 @@ export const orderService = {
     });
 
     if (!res.ok) throw new Error('Failed to create order');
-    return await res.json();
+    return res.json();
   },
 };
