@@ -1,23 +1,26 @@
 # Usa una imagen base de Node.js
 FROM node:18-alpine
 
-# Crea un directorio de trabajo
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copia package.json y package-lock.json primero para instalar dependencias
+# 🛠️ Previene errores de oxide en Alpine
+ENV TAILWIND_DISABLE_PREBUILD=true
+
+# Copia los archivos de dependencias
 COPY package*.json ./
 
 # Instala las dependencias
 RUN npm install
 
-# Copia el resto del código
+# Copia el resto del código fuente
 COPY . .
 
-# Construye la aplicación de Next.js
+# Compila la aplicación
 RUN npm run build
 
-# Expone el puerto en el contenedor (3000 por defecto en Next.js)
+# Expone el puerto de Next.js
 EXPOSE 3000
 
-# Arranca la aplicación en modo producción
+# Comando por defecto al iniciar el contenedor
 CMD ["npm", "start"]

@@ -13,7 +13,14 @@ from methods.product import get_products_with_stock
 async def test_get_products_with_stock(mock_find, mock_get_inventory_stub):
     mock_cursor = AsyncMock()
     mock_cursor.__aiter__.return_value = [
-        {"_id": 1, "title": "Test", "price": 9.99, "description": "desc", "category": {"id": 1, "name": "cat", "image": "img", "slug": "cat"}, "images": []}
+        {
+            "_id": 1,
+            "title": "Test",
+            "price": 9.99,
+            "description": "desc",
+            "category": {"id": 1, "name": "cat", "image": "img", "slug": "cat"},
+            "images": []
+        }
     ]
     mock_find.return_value = mock_cursor
 

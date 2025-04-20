@@ -1,5 +1,10 @@
+import sys
+import os
 import pytest
-from product_service.methods import product
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from methods import product 
 
 class _EmptyAsyncCursor:
     def __aiter__(self): return self

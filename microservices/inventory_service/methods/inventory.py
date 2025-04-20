@@ -1,4 +1,4 @@
-from inventory_service.config.database import inventory_collection
+from config.database import inventory_collection
 from datetime import datetime
 from config.product_grpc_client import get_product_stub
 from pb import product_pb2

@@ -14,18 +14,21 @@ class OrderServiceServicer(order_pb2_grpc.OrderServiceServicer):
         try:
             has_stock = await check_inventory(product_id, quantity)
             if not has_stock:
+                logger.warning(f"Insufficient stock for product {product_id}, quantity requested: {quantity}")
                 return order_pb2.OrderResponse(success=False, message="Insufficient stock.")
 
             ok = await reduce_stock(product_id, quantity)
             if not ok:
-                logging.warning("Stock could not be reduced (possible race condition).")
+                logger.warning(f"Failed to reduce stock for product {product_id}. Possible race condition or update conflict.")
                 return order_pb2.OrderResponse(success=False, message="Could not reduce stock.")
 
             ok = await save_order(product_id, quantity, client_id)
             if not ok:
+                logger.error(f"Failed to save order for product {product_id}, quantity {quantity}, client {client_id}")
                 return order_pb2.OrderResponse(success=False, message="Could not save order.")
 
+            logger.info(f"Order created successfully for product {product_id}, quantity {quantity}, client {client_id}")
             return order_pb2.OrderResponse(success=True, message="Order created successfully.")
         except Exception as e:
-            logging.error(f"Unexpected error: {e}")
+            logger.error(f"Unexpected error while creating order for product {product_id}: {e}")
             return order_pb2.OrderResponse(success=False, message="Internal error.")
