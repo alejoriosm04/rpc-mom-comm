@@ -1,3 +1,4 @@
+version: "3.8"
 
 services:
   ecommerce-front:
@@ -79,6 +80,16 @@ services:
       - ./analytics/grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - loki
+
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./analytics/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - api-gateway
 
 volumes:
   grafana-storage:

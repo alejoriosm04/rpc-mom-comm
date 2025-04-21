@@ -1,116 +1,37 @@
 {
+  "dashboard": {
     "id": null,
-    "title": "Dashboard de Logs y M\u00e9tricas Docker",
+    "uid": null,
+    "title": "Docker Logs",
     "timezone": "browser",
-    "schemaVersion": 30,
+    "schemaVersion": 37,
     "version": 1,
-    "refresh": "30s",
+    "refresh": "5s",
     "time": {
-      "from": "now-1h",
+      "from": "now-30m",
       "to": "now"
     },
-    "panels": [
-      {
-        "type": "logs",
-        "title": "Visor de Logs por contenedor",
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "targets": [
-          {
-            "expr": "{container_name=~\".+\"}",
-            "refId": "A"
-          }
-        ],
-        "id": 1,
-        "gridPos": {
-          "x": 0,
-          "y": 0,
-          "w": 24,
-          "h": 12
-        }
-      },
-      {
-        "type": "timeseries",
-        "title": "N\u00famero de l\u00edneas de log por contenedor (\u00faltima hora)",
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "targets": [
-          {
-            "expr": "count_over_time({container_name=~\".+\"}[1m])",
-            "refId": "B"
-          }
-        ],
-        "id": 2,
-        "gridPos": {
-          "x": 0,
-          "y": 12,
-          "w": 12,
-          "h": 8
-        },
-        "fieldConfig": {
-          "defaults": {
-            "unit": "short",
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {}
-          },
-          "overrides": []
-        }
-      },
-      {
-        "type": "stat",
-        "title": "Errores recientes (contiene 'error')",
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "targets": [
-          {
-            "expr": "count_over_time({container_name=~\".+\"} |= \"error\"[5m])",
-            "refId": "C"
-          }
-        ],
-        "id": 3,
-        "gridPos": {
-          "x": 12,
-          "y": 12,
-          "w": 12,
-          "h": 8
-        },
-        "fieldConfig": {
-          "defaults": {
-            "unit": "none",
-            "color": {
-              "mode": "thresholds"
-            },
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "yellow",
-                  "value": 10
-                },
-                {
-                  "color": "red",
-                  "value": 50
-                }
-              ]
-            },
-            "custom": {}
-          },
-          "overrides": []
-        }
-      }
-    ],
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m"
+      ],
+      "time_options": [
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "6h",
+        "12h",
+        "24h"
+      ]
+    },
+    "templating": {
+      "list": []
+    },
     "annotations": {
       "list": [
         {
@@ -124,7 +45,176 @@
         }
       ]
     },
-    "templating": {
-      "list": []
+    "panels": [
+      {
+        "title": "Total Requests",
+        "type": "stat",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 6,
+          "h": 4
+        },
+        "id": 1,
+        "targets": [
+          {
+            "expr": "gateway_requests_total",
+            "refId": "A"
+          }
+        ],
+        "datasource": "Prometheus"
+      },
+      {
+        "title": "Average Request Duration (s)",
+        "type": "timeseries",
+        "gridPos": {
+          "x": 6,
+          "y": 0,
+          "w": 12,
+          "h": 4
+        },
+        "id": 2,
+        "targets": [
+          {
+            "expr": "rate(gateway_request_duration_seconds_sum[1m]) / rate(gateway_request_duration_seconds_count[1m])",
+            "refId": "A"
+          }
+        ],
+        "datasource": "Prometheus"
+      },
+      {
+        "title": "Request Duration Heatmap",
+        "type": "heatmap",
+        "gridPos": {
+          "x": 0,
+          "y": 4,
+          "w": 18,
+          "h": 8
+        },
+        "id": 3,
+        "targets": [
+          {
+            "expr": "gateway_request_duration_seconds_bucket",
+            "refId": "A"
+          }
+        ],
+        "datasource": "Prometheus"
+      },
+      {
+        "title": "Requests by Status Code",
+        "type": "barchart",
+        "gridPos": {
+          "x": 0,
+          "y": 12,
+          "w": 12,
+          "h": 4
+        },
+        "id": 4,
+        "targets": [
+          {
+            "expr": "sum by (status_code) (rate(gateway_status_codes_total[1m]))",
+            "refId": "A"
+          }
+        ],
+        "datasource": "Prometheus"
+      },
+      {
+        "title": "CPU Usage (Rate)",
+        "type": "timeseries",
+        "gridPos": {
+          "x": 0,
+          "y": 16,
+          "w": 12,
+          "h": 4
+        },
+        "id": 5,
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[1m])",
+            "refId": "A"
+          }
+        ],
+        "datasource": "Prometheus"
+      },
+      {
+        "title": "Memory Usage (Resident)",
+        "type": "timeseries",
+        "gridPos": {
+          "x": 12,
+          "y": 16,
+          "w": 12,
+          "h": 4
+        },
+        "id": 6,
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "refId": "A"
+          }
+        ],
+        "datasource": "Prometheus"
+      },
+      {
+        "title": "Open File Descriptors",
+        "type": "stat",
+        "gridPos": {
+          "x": 0,
+          "y": 20,
+          "w": 6,
+          "h": 4
+        },
+        "id": 7,
+        "targets": [
+          {
+            "expr": "process_open_fds",
+            "refId": "A"
+          }
+        ],
+        "datasource": "Prometheus"
+      },
+      {
+        "title": "GC Collections (gen=0)",
+        "type": "timeseries",
+        "gridPos": {
+          "x": 6,
+          "y": 20,
+          "w": 6,
+          "h": 4
+        },
+        "id": 8,
+        "targets": [
+          {
+            "expr": "rate(python_gc_collections_total{generation=\"0\"}[5m])",
+            "refId": "A"
+          }
+        ],
+        "datasource": "Prometheus"
+      },
+      {
+        "title": "GC Collected Objects (gen=0)",
+        "type": "timeseries",
+        "gridPos": {
+          "x": 12,
+          "y": 20,
+          "w": 6,
+          "h": 4
+        },
+        "id": 9,
+        "targets": [
+          {
+            "expr": "rate(python_gc_objects_collected_total{generation=\"0\"}[5m])",
+            "refId": "A"
+          }
+        ],
+        "datasource": "Prometheus"
+      }
+    ],
+    "gridPos": {
+      "h": 0,
+      "w": 24,
+      "x": 0,
+      "y": 0
     }
-  }
+  },
+  "overwrite": true
+}
