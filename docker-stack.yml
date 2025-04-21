@@ -84,6 +84,7 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./analytics/grafana/provisioning:/etc/grafana/provisioning
+      - ./analytics/grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - loki
 
@@ -93,7 +94,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./analytics/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     deploy:
       replicas: 1
 
