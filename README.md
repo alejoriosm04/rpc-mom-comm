@@ -429,7 +429,7 @@ Aquí se describe cómo interactuar con el proyecto en el frontend:
 ![image](https://github.com/user-attachments/assets/279f5a01-c343-45bc-b5e1-cc4fc79936e4)
 
 3. Cuando ingresa a esta sección, seleccione la cantidad de producto que desea (por defecto 1), luego debe clickear la opción "Add to Cart" para simular la compra de un producto y visualizar en tiempo real cómo el stock disminuye.
-4. 
+   
 ![image](https://github.com/user-attachments/assets/a5297364-9763-41dd-8c12-af6a171996f9)
 
 5. Si quiere probar el mecanismo de failover, conéctese a la instancia y apague el servicio de productos, verá que si intenta refrescar la página no aparecerá ningún producto. Después de unos segundos, inicie la instancia de nuevo y automáticamente, sin refrescar la página, usted verá como el E-commerce le muestra los productos nuevamente. Realice el mismo procedimiento para el servicio de orden y verá cómo el sistema intenta procesar la orden, pero dado que no está disponible, le notifica a usted, active el microservicio nuevamente y verá cómo en tiempo real la página le muestra un anuncio diciendo que su orden fue procesada.
