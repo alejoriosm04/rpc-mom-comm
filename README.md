@@ -433,6 +433,9 @@ Aquí se describe cómo interactuar con el proyecto en el frontend:
 ![image](https://github.com/user-attachments/assets/a5297364-9763-41dd-8c12-af6a171996f9)
 
 5. Si quiere probar el mecanismo de failover, conéctese a la instancia y apague el servicio de productos, verá que si intenta refrescar la página no aparecerá ningún producto. Después de unos segundos, inicie la instancia de nuevo y automáticamente, sin refrescar la página, usted verá como el E-commerce le muestra los productos nuevamente. Realice el mismo procedimiento para el servicio de orden y verá cómo el sistema intenta procesar la orden, pero dado que no está disponible, le notifica a usted, active el microservicio nuevamente y verá cómo en tiempo real la página le muestra un anuncio diciendo que su orden fue procesada.
+
+   ![image](https://github.com/user-attachments/assets/154ddb65-eccf-45ea-b18d-751543dca33e)
+   ![image](https://github.com/user-attachments/assets/1053253f-c319-4d4c-86cb-c3cc01e96451)
    
 ### Referencias
 
