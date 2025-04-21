@@ -1,10 +1,11 @@
-# api-gateway/app.py
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from routes import product, realtime, inventory, order
 from slowapi.errors import RateLimitExceeded
 from config.limiter import limiter, _rate_limit_exceeded_handler
 from fastapi.openapi.utils import get_openapi
+from config.metrics import expose_metrics, record_request_metrics
+import time
 
 app = FastAPI(
     title="API Gateway",
@@ -17,24 +18,27 @@ app = FastAPI(
     ]
 )
 
-# Middleware CORS
+# Middleware for CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://34.238.228.250:3000"],  
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Rate Limiting
+# Add rate limiting
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Routers
+# Include routes
 app.include_router(product.router)
 app.include_router(inventory.router)
 app.include_router(order.router)
 app.include_router(realtime.router)
+
+# Integrate Prometheus metrics
+app.include_router(expose_metrics())
 
 # Override OpenAPI for API Key Auth in Swagger UI
 def custom_openapi():
@@ -62,3 +66,19 @@ def custom_openapi():
     return app.openapi_schema
 
 app.openapi = custom_openapi
+
+# Middleware for tracking request metrics
+@app.middleware("http")
+async def add_metrics(request: Request, call_next):
+    start_time = time.time()  # Start the timer
+
+    # Process the request
+    response = await call_next(request)
+
+    # Calculate the response time
+    response_time = time.time() - start_time
+
+    # Record the metrics
+    record_request_metrics(request, response_time, response.status_code)
+
+    return response
