@@ -408,7 +408,7 @@ Características técnicas:
 
 #### 4.1 Despliegue
 
-Para más información sobre el despliegue en producción en una instancia **EC2 de AWS**, ver el archivo [DEPLOYMENT.md](https://github.com/alejoriosm04/rpc-mom-comm/blob/main/docs/DEPLOYMENT.md). Aquí se describe paso a paso el despliegue del proyecto en una instancia EC2 de AWS.
+Para más información sobre el despliegue en producción en una instancia EC2 de AWS, ver el archivo [DEPLOYMENT.md](https://github.com/alejoriosm04/rpc-mom-comm/blob/main/docs/DEPLOYMENT.md). Aquí se describe paso a paso el despliegue del proyecto en una instancia EC2 de AWS.
 
 #### 4.2 IP o nombre de dominio del servidor
 
@@ -417,11 +417,10 @@ Para más información sobre el despliegue en producción en una instancia **EC2
 - Acceso RabbitMQ: `http://<TU_IP_PUBLICA>:15672`
 - Accesso Logs Grafana: `http://<TU_IP_PUBLICA>:3001`
 
-> ⚠️ Recuerda abrir los puertos en el grupo de seguridad o firewall si usas AWS, GCP o VPS.
 
-#### 4.3 Mini guía para el usuario final ***
+#### 4.3 Mini guía para el usuario final 
 
-Aquí se describe cómo interactuar con el proyecto en el **frontend** una vez desplegado.
+Aquí se describe cómo interactuar con el proyecto en el frontend una vez desplegado.
 
 ### Referencias
 
