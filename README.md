@@ -280,9 +280,9 @@ Esto se aplica a:
 
 Implementado en Next.js, proporciona una interfaz moderna y reactiva.
 
-- Visualización y búsqueda de productos.
-- Gestión del carrito de compras.
-- Proceso de checkout y creación de órdenes.
+- Visualización de productos.
+- Gestión interactiva de las compras a realizar.
+- Proceso decreación de órdenes.
 - Visualización del estado de órdenes en tiempo real.
 - Actualizaciones automáticas de stock mediante WebSockets.
 
@@ -291,6 +291,7 @@ Características técnicas:
 - Mantiene conexión WebSocket para actualizaciones en tiempo real.
 - Implementa autenticación mediante API key.
 - Diseño responsivo para diferentes dispositivos.
+- Se actualiza de manera dinámica ante la perdída o recuperación de un microservicio
 
 ##### API Gateway
 
@@ -311,31 +312,31 @@ Características técnicas:
 
 Implementado en Python, gestiona el catálogo de productos.
 
-- CRUD completo de productos
-- Búsqueda y filtrado de productos
+- Lectura y listado de productos
 - Gestión de categorías
-- Validación de datos de productos
+- Validación de fuentes URL para imágenes
 
 Características técnicas:
 - Almacenamiento en MongoDB.
 - Exposición de servicios vía gRPC.
-- Implementación de caché para consultas frecuentes.
 - Validación de esquemas de datos.
+- Modelos de respuesta y de solicitud
+- Sistema de reintentos para fallos.
 
 ##### Microservicio de Inventario
 
 Implementado en Python, gestiona el stock de productos.
 
-- Control de niveles de stock.
 - Verificación de disponibilidad.
 - Actualización de inventario.
-- Historial de movimientos de stock.
+- Manejo y movimientos del stock.
 
 Características técnicas:
-- Transacciones atómicas para actualizaciones.
-- Notificaciones de cambios de stock.
+- Gestión de cambios de stock.
 - Integración con el servicio de órdenes.
 - Manejo de reservas de stock.
+- Comunicación grpc con microservicios
+- Sistema de reintentos para fallos.
 
 ##### Microservicio de Órdenes
 
@@ -343,11 +344,9 @@ Implementado en Python, procesa las órdenes de compra.
 
 - Creación y gestión de órdenes.
 - Verificación de disponibilidad de stock.
-- Procesamiento de pagos.
 - Notificación de estados de órdenes.
 
 Características técnicas:
-  - Transacciones distribuidas.
   - Manejo de estados de órdenes.
   - Integración con servicios de inventario.
   - Sistema de reintentos para fallos.
@@ -379,6 +378,7 @@ Características técnicas:
 - Colas durables.
 - Confirmaciones de entrega.
 - Dead letter queues.
+- Cada microservicio tiene su respectiva cola para la cual realiza su procedimiento de recuperación en caso de que se "caiga" el respectivo servicio. Para el caso de order, por ejemplo, si se realizan múltiples ordenes con el microservicio apagado, estás seran encoladas y procesadas cuando el servicio esté disponible nuevamente (y notificadas por medio de logs desde el backend y por medio de pop-ups en el frontend)
 
 ##### Sistema de Monitoreo
 
@@ -420,8 +420,19 @@ Para más información sobre el despliegue en producción en una instancia EC2 d
 
 #### 4.3 Mini guía para el usuario final 
 
-Aquí se describe cómo interactuar con el proyecto en el frontend una vez desplegado.
+Aquí se describe cómo interactuar con el proyecto en el frontend:
 
+1. Ingresar a la IP indicada, allí encontrará la página inicial o Home
+![image](https://github.com/user-attachments/assets/c9d2f17e-f73d-459b-98c4-d32f30e81d64)
+
+2. Ingresar a la sección "Products", allí encontrará los productos disponibles dentro del E-Commerce 
+![image](https://github.com/user-attachments/assets/279f5a01-c343-45bc-b5e1-cc4fc79936e4)
+
+3. Cuando ingresa a esta sección, seleccione la cantidad de producto que desea (por defecto 1), luego debe clickear la opción "Add to Cart" para simular la compra de un producto y visualizar en tiempo real cómo el stock disminuye.
+![image](https://github.com/user-attachments/assets/a5297364-9763-41dd-8c12-af6a171996f9)
+
+4. Si quiere probar el mecanismo de failover, conéctese a la instancia y apague el servicio de productos, verá que si intenta refrescar la página no aparecerá ningún producto. Después de unos segundos, inicie la instancia de nuevo y automáticamente, sin refrescar la página, usted verá como el E-commerce le muestra los productos nuevamente. Realice el mismo procedimiento para el servicio de orden y verá cómo el sistema intenta procesar la orden, pero dado que no está disponible, le notifica a usted, active el microservicio nuevamente y verá cómo en tiempo real la página le muestra un anuncio diciendo que su orden fue procesada.
+   
 ### Referencias
 
 A continuación se listan las referencias utilizadas para el desarrollo del proyecto, incluyendo documentación oficial, tutoriales, videos, artículos y fragmentos de código reutilizados:
