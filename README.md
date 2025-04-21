@@ -395,7 +395,14 @@ Características técnicas:
 - Visualización de métricas.
 - Configuración de alertas.
 
-#### 3.6 Resultados y pantallazos ***
+#### 3.6 Resultados y pantallazos
+
+![image](https://github.com/user-attachments/assets/a7525902-a612-4022-b353-2b3caaf4b372)
+![image](https://github.com/user-attachments/assets/461e7b2d-bf76-48f4-bc41-3db5cf5ac1bf)
+![image](https://github.com/user-attachments/assets/178f3b92-ecd5-47dd-a508-5b4dfc4c12e8)
+![image](https://github.com/user-attachments/assets/ab28516b-a72d-4ede-bbbd-2bf17d4409a3)
+![image](https://github.com/user-attachments/assets/4122fd45-1162-453e-a9c9-96e06d4ccda7)
+![image](https://github.com/user-attachments/assets/cebbb9c4-da87-4ebc-8b9e-f3df39a4fc6e)
 
 ### 4. Descripción del ambiente de ejecución (Producción)
 
