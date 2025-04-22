@@ -96,7 +96,8 @@ El sistema está compuesto por una arquitectura de microservicios donde cada com
 
 #### 2.2 Arquitectura
 
-![Diagrama de arquitectura](https://github.com/user-attachments/assets/9afcbdde-2c7a-4b37-b908-683bfa4eb92a)
+![Diagrama de arquitectura](https://github.com/user-attachments/assets/db5ce9cb-6388-42f0-b580-5c2068fc4fb2)
+
 
 - Los microservicios se comunican entre sí por gRPC
 - RabbitMQ se usa como mecanismo de recuperación ante fallos (failover)
